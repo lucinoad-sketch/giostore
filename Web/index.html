@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gio Store - Descubre y descarga videojuegos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Albert+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="logo.png">
+<meta name="theme-color" content="#07040f">
+</head>
+<body>
+
+<header class="nav" id="nav">
+  <div class="wrap nav-in">
+    <a href="#inicio" class="logo"><img src="logo1.png" alt="Gio Store" onerror="this.replaceWith(document.createTextNode('Gio Store'))"></a>
+    <nav class="links" aria-label="Principal">
+      <a href="#catalogo">Catálogo</a>
+      <a href="#plataforma">Ventajas</a>
+      <a href="#como">Cómo descargar</a>
+      <a href="developer.html">Desarrolladores</a>
+    </nav>
+    <div class="nav-cta">
+      <a href="#descargar" class="btn btn-primary">Descargar app</a>
+      <button class="burger" id="burger" aria-label="Abrir menú" aria-expanded="false"><i class="fa-solid fa-bars"></i></button>
+    </div>
+  </div>
+  <div class="drawer" id="drawer">
+    <a href="#catalogo">Catálogo</a>
+    <a href="#plataforma">Ventajas</a>
+    <a href="#como">Cómo descargar</a>
+    <a href="developer.html">Desarrolladores</a>
+    <a href="#descargar">Descargar app</a>
+    <a href="https://www.tiktok.com/@giostore.digital" target="_blank" rel="noopener">TikTok</a>
+  </div>
+</header>
+
+<main>
+<section class="hero" id="inicio">
+  <div class="wrap hero-grid">
+    <div>
+      <h1>Descarga los mejores juegos en un solo lugar.</h1>
+      <p class="lead"><strong>Gio Store</strong> es tu tienda para descargar juegos top. Encuentra lo mejor, descarga directo y empieza a jugar sin complicaciones.</p>
+      <div class="cta">
+        <a href="#descargar" class="btn btn-primary"><i class="fa-solid fa-download"></i>Obtener la app</a>
+        <a href="#catalogo" class="btn btn-ghost"><i class="fa-solid fa-gamepad"></i>Ver juegos</a>
+      </div>
+      <div class="stats">
+        <div><b>Top</b><span>Juegos seleccionados</span></div>
+        <div><b>Rápido</b><span>Descargas directas</span></div>
+        <div><b>Gratis</b><span>Descarga y juega</span></div>
+      </div>
+    </div>
+    <div class="fan" aria-hidden="true">
+      <div class="poster p1"><img src="https://assets.games.gg/1748480401988_grand_theft_auto_vi_cover_93c3eab32b.png" alt=""></div>
+      <div class="poster p3"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4NDzf0Weyuu0cCDxHrq5ppzPClqgaJyCUH1IPj2kILNPkBMAuxjRAfmw-&amp;s=10" alt="" onerror="this.onerror=null;this.src='fc27.png'"></div>
+    </div>
+  </div>
+</section>
+
+<section id="catalogo">
+  <div class="wrap">
+    <div class="cat-top">
+      <div>
+        <h2>Catálogo de juegos</h2>
+        <p class="lead" style="margin-top:12px">Los mejores juegos, listos para descargar.</p>
+      </div>
+    </div>
+    <div class="grid" id="grid" hidden></div>
+    <div class="empty" id="empty">
+      <i class="fa-solid fa-gamepad"></i>
+      <h3 id="eh">Cargando juegos...</h3>
+      <p id="ep"></p>
+      <a class="btn btn-primary" id="ecta" href="https://www.tiktok.com/@giostore.digital" target="_blank" rel="noopener" hidden><i class="fa-brands fa-tiktok"></i>Síguenos en TikTok</a>
+    </div>
+  </div>
+</section>
+
+<section class="light" id="plataforma">
+  <div class="wrap">
+    <div class="feat-head">
+      <h2>Diseñada para jugar sin preocupaciones</h2>
+      <p class="lead">Todo lo que necesitas para encontrar, descargar y disfrutar tus juegos.</p>
+    </div>
+    <div class="feats">
+      <div class="feat"><i class="fa-solid fa-trophy"></i><h3>Juegos top</h3><p>Seleccionamos lo mejor para que encuentres juegos increíbles sin perder tiempo.</p></div>
+      <div class="feat"><i class="fa-solid fa-bolt"></i><h3>Descargas rápidas</h3><p>Servidores optimizados, sin acortadores de enlaces ni publicidad engañosa.</p></div>
+      <div class="feat"><i class="fa-solid fa-folder-open"></i><h3>Tu biblioteca</h3><p>Todos tus juegos descargados en un solo lugar, con categorías claras.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="process" id="como">
+  <div class="wrap">
+    <h2>Descargar es fácil</h2>
+    <p class="lead">En tres pasos tienes tu juego listo para jugar.</p>
+    <div class="steps">
+      <div class="step" style="--c:#ff3fa4"><span class="dot">1</span><h3>Instala Gio Store</h3><p>Descarga la app para Android o abre la tienda desde tu navegador.</p></div>
+      <div class="step" style="--c:#8b5cff"><span class="dot">2</span><h3>Elige tu juego</h3><p>Explora el catálogo y encuentra los juegos top que más te gusten.</p></div>
+      <div class="step" style="--c:#5b8cff"><span class="dot">3</span><h3>Descarga y juega</h3><p>Descarga directa, sin acortadores de enlaces ni publicidad engañosa.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="dev" id="desarrolladores">
+  <div class="wrap"><div class="strip">
+    <div><h3>¿Eres creador de juegos?</h3><p>Solicita tu perfil de desarrollador para publicar en Gio Store.</p></div>
+    <a class="btn btn-ghost" href="developer.html">Ser desarrollador</a>
+  </div></div>
+</section>
+
+<section class="get" id="descargar">
+  <div class="wrap"><div class="get-card">
+    <h2>Lleva Gio Store contigo</h2>
+    <p class="lead">Accede a la tienda desde tu móvil o desde el navegador de tu computadora, con una interfaz rápida y sin interrupciones.</p>
+    <div class="cta">
+      <button class="btn btn-primary" onclick="toast('Descargando Gio Store para Android...')"><i class="fa-brands fa-android"></i>Descargar APK</button>
+      <button class="btn btn-ghost" onclick="toast('Abriendo la Web App de Gio Store...')"><i class="fa-solid fa-globe"></i>Abrir Web App</button>
+    </div>
+    <p class="social"><a href="https://www.tiktok.com/@giostore.digital" target="_blank" rel="noopener"><i class="fa-brands fa-tiktok"></i>Síguenos en TikTok @giostore.digital</a></p></div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot">
+      <div><a href="#inicio" class="logo"><img src="logo1.png" alt="Gio Store" onerror="this.replaceWith(document.createTextNode('Gio Store'))"></a><p>Descubre, descarga y comparte videojuegos.</p></div>
+      <div><h4>Tienda</h4><a href="#catalogo">Catálogo</a><a href="#descargar">Descargar app</a><a href="developer.html">Ser desarrollador</a></div>
+      <div><h4>Síguenos</h4><a class="tt" href="https://www.tiktok.com/@giostore.digital" target="_blank" rel="noopener"><i class="fa-brands fa-tiktok"></i>@giostore.digital</a></div>
+      <div><h4>Legal</h4><a href="#legal">Derechos de autor</a><a href="#">Términos</a><a href="#">Privacidad</a></div>
+    </div>
+    <div class="legal" id="legal">
+      <p><b>© 2026 Gio Store. Todos los derechos reservados.</b> El nombre Gio Store, su logotipo, el diseño del sitio, los textos y los elementos gráficos propios están protegidos por las leyes de propiedad intelectual y derechos de autor. Queda prohibida su reproducción, distribución, modificación o uso comercial, total o parcial, sin autorización previa y por escrito.</p>
+      <p>Los videojuegos, nombres, logotipos, imágenes y demás contenidos publicados en Gio Store pertenecen a sus respectivos desarrolladores y titulares de derechos. Gio Store no reclama propiedad sobre contenido de terceros, y su disponibilidad en la plataforma no implica cesión de derechos ni respaldo.</p>
+      <p>Cada desarrollador es responsable de contar con los derechos y permisos necesarios sobre lo que publica, incluidos código, arte, música, tipografías y marcas. El contenido que infrinja derechos de terceros podrá ser retirado sin previo aviso y el perfil del desarrollador podrá ser suspendido.</p>
+      <p>Si crees que algún contenido vulnera tus derechos de autor, contáctanos con la información necesaria para identificarlo y evaluaremos su retiro.</p>
+      <p>Android es una marca de Google LLC, Grand Theft Auto de Take-Two Interactive Software, Inc. y EA SPORTS FC de Electronic Arts Inc. Todas las demás marcas, nombres comerciales y logotipos mencionados pertenecen a sus respectivos propietarios y se usan solo con fines informativos. Gio Store no está afiliada, patrocinada ni respaldada por ellos.</p>
+    </div>
+    <div class="copy"><span>© 2026 Gio Store. Todos los derechos reservados.</span><span>Solo desarrolladores aprobados pueden publicar.</span></div>
+  </div>
+</footer>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script src="firebase-init.js"></script>
+
+<script>
+const $=id=>document.getElementById(id);
+const nav=$('nav'),drawer=$('drawer'),burger=$('burger');
+const root=document.documentElement,still=matchMedia('(prefers-reduced-motion:reduce)').matches;let tick=false;
+function onScroll(){tick=false;nav.classList.toggle('solid',scrollY>30);if(!still){const m=root.scrollHeight-innerHeight;root.style.setProperty('--p',m>0?Math.min(1,scrollY/m).toFixed(3):0)}}
+onScroll();addEventListener('scroll',()=>{if(!tick){tick=true;requestAnimationFrame(onScroll)}},{passive:true});addEventListener('resize',onScroll);
+burger.onclick=()=>{const o=drawer.classList.toggle('open');burger.setAttribute('aria-expanded',o)};
+drawer.querySelectorAll('a').forEach(a=>a.onclick=()=>drawer.classList.remove('open'));
+
+const db=window.gioDB;
+function el(t,c,x){const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e}
+function setEmpty(t,p,cta){$('eh').textContent=t;$('ep').textContent=p;$('ecta').hidden=!cta}
+function card(g){
+  const a=el('article','game'),p=el('div','poster');
+  if(g.cover){const i=el('img');i.src=g.cover;i.alt=g.name;i.loading='lazy';p.append(i)}
+  if(g.age)p.append(el('span','badge','+'+g.age));
+  const cap=el('div','cap');cap.append(el('strong','',g.name));p.append(cap);
+  const info=el('div','game-info'),t=el('p');
+  t.append(el('b','',g.pub||'Gio Store'),document.createElement('br'),el('span','clamp',g.desc||''));info.append(t);
+  const u=g.url||g.link||g.download;
+  if(u&&/^https?:\/\//.test(u)){const b=el('a','dl','Descargar');b.href=u;b.target='_blank';b.rel='noopener';info.append(b)}
+  a.append(p,info);return a;
+}
+async function loadGames(){
+  if(!db){setEmpty('No pudimos cargar el catálogo','Recarga la página para intentarlo de nuevo.',false);return}
+  try{
+    const snap=await db.collection('games').get();
+    const list=snap.docs.map(d=>d.data()).filter(g=>g&&g.name);
+    if(!list.length){setEmpty('Los primeros juegos llegan pronto','Estamos preparando los mejores títulos para ti. Síguenos en TikTok para enterarte cuando lleguen.',true);return}
+    const grid=$('grid');grid.replaceChildren();
+    list.sort((a,b)=>String(a.name).localeCompare(String(b.name))).forEach(g=>grid.append(card(g)));
+    $('empty').hidden=true;grid.hidden=false;
+  }catch(e){console.error(e);setEmpty('No pudimos cargar el catálogo','Revisa tu conexión y recarga la página.',false)}
+}
+loadGames();
+
+let tt;function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),2600)}
+</script>
+</body>
+</html>
