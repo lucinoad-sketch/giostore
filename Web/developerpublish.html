@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gio Developer - Publica tus juegos en GioStore</title>
+<meta name="theme-color" content="#07040f">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Albert+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#07040f;--panel:#120b22;--panel2:#1a1030;--field:#0d0818;--line:rgba(255,255,255,.11);--tx:#f4f0fc;--mu:#a99ec6;--pink:#ff3fa4;--vio:#8b5cff;--blu:#5b8cff;--err:#ff7b95;--ok:#4ade80;--grad:linear-gradient(135deg,#ff3fa4,#8b5cff 55%,#5b8cff)}
+*{box-sizing:border-box;margin:0}
+[hidden]{display:none!important}
+html{color-scheme:dark}
+body{font-family:'Albert Sans',system-ui,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;line-height:1.5;-webkit-font-smoothing:antialiased;
+  background-image:radial-gradient(60% 45% at 85% -8%,rgba(139,92,255,.26),transparent),radial-gradient(40% 40% at 0 100%,rgba(255,63,164,.13),transparent);background-attachment:fixed}
+a{color:#c9b8ff}
+h1{font-size:clamp(2rem,5vw,3.2rem);line-height:1.08;letter-spacing:-.03em;font-weight:800}
+h2{font-size:1.2rem;font-weight:700;letter-spacing:-.01em}
+h3{font-size:1rem;font-weight:700}
+.lead{color:var(--mu);font-size:1.05rem;max-width:46ch}
+.brand{font-weight:800;letter-spacing:-.02em;font-size:1.1rem}
+:focus-visible{outline:2px solid var(--blu);outline-offset:2px}
+
+/* Botones y campos */
+.btn{font:inherit;font-weight:700;color:#fff;background:var(--grad);border:0;border-radius:12px;padding:13px 22px;cursor:pointer;transition:filter .15s,transform .15s;text-decoration:none;display:inline-block;text-align:center}
+.btn:hover{filter:brightness(1.1)}.btn:active{transform:translateY(1px)}
+.btn:disabled{opacity:.55;cursor:wait}
+.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--tx)}
+.btn.sm{padding:8px 14px;font-size:.9rem}
+.btn.danger{background:transparent;border:1px solid rgba(255,123,149,.4);color:var(--err)}
+.lab{display:block;font-size:.92rem;font-weight:600;margin-bottom:7px}
+.lab small,.hint small{font-weight:400;color:var(--mu);margin-left:6px}
+.fld{margin-bottom:18px}
+input,select,textarea{display:block;width:100%;font:inherit;font-weight:400;color:var(--tx);background:var(--field);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+textarea{resize:vertical;min-height:110px}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--vio);box-shadow:0 0 0 3px rgba(139,92,255,.25)}
+::placeholder{color:#6f6491}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:28px}
+.card h2{margin-bottom:6px}
+.sub{color:var(--mu);font-size:.92rem;margin-bottom:22px}
+.sec{border-top:1px solid var(--line);margin-top:26px;padding-top:24px}
+.sec h3{margin-bottom:4px}
+.msg{min-height:1.5em;font-size:.92rem;margin:4px 0 14px}
+.msg.err{color:var(--err)}.msg.ok{color:var(--ok)}
+.pw{position:relative}
+.pw input{padding-right:84px}
+.pw button{position:absolute;right:6px;top:7px;background:none;border:0;color:var(--mu);font:inherit;font-size:.85rem;font-weight:600;cursor:pointer;padding:6px 10px;border-radius:8px}
+.lnk{background:none;border:0;color:#c9b8ff;font:inherit;font-size:.88rem;text-decoration:underline;cursor:pointer;padding:0}
+
+/* Pantallas de acceso */
+.center{min-height:100vh;display:grid;place-items:center;padding:32px 20px}
+.login-in{display:grid;grid-template-columns:1.1fr .9fr;gap:64px;align-items:center;max-width:1000px;width:100%}
+.intro .brand{margin-bottom:28px}
+.intro h1{margin-bottom:18px}
+.login .btn{width:100%}
+.hint{margin-top:18px;font-size:.9rem;color:var(--mu)}
+.denied-in{max-width:480px;width:100%}
+.denied-in h2{margin-bottom:10px}
+.denied-in p{color:var(--mu);margin-bottom:16px}
+.uid{display:flex;gap:8px;margin-bottom:18px}
+.uid code{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;background:var(--field);border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-size:.88rem}
+
+/* Panel */
+.top{border-bottom:1px solid var(--line);background:rgba(7,4,15,.82);backdrop-filter:blur(10px);position:sticky;top:0;z-index:5}
+.top-in{max-width:1120px;margin:0 auto;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;gap:16px}
+.who{display:flex;align-items:center;gap:14px;font-size:.92rem;color:var(--mu);min-width:0}
+.who span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wrap{max-width:1120px;margin:0 auto;padding:44px 20px 80px}
+.head{margin-bottom:34px}
+.head h1{font-size:clamp(1.8rem,4vw,2.5rem);margin-bottom:8px}
+.cols{display:grid;grid-template-columns:1fr 340px;gap:32px;align-items:start}
+.row{display:flex;gap:12px;flex-wrap:wrap}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.mt{margin:56px 0 18px}
+
+/* Selectores de imagen */
+.drop{position:relative;display:grid;place-items:center;overflow:hidden;cursor:pointer;color:var(--mu);font:inherit;font-size:.9rem;font-weight:600;background:var(--field);border:1.5px dashed rgba(169,158,198,.45);border-radius:14px;padding:0;transition:border-color .15s}
+.drop:hover{border-color:var(--vio)}
+.drop img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.drop .dt{position:relative;z-index:1;padding:6px 12px;border-radius:999px}
+.drop img:not([hidden])+.dt{background:rgba(7,4,15,.72);color:#fff}
+.drop.icon{width:150px;aspect-ratio:1}
+.drop.bg{width:100%;max-width:360px;aspect-ratio:16/11}
+.alt{margin-top:8px}
+.lin{margin-top:8px}
+
+/* Descarga */
+.seg{display:inline-flex;background:var(--field);border:1px solid var(--line);border-radius:12px;padding:4px;margin-bottom:14px}
+.seg button{font:inherit;font-weight:600;font-size:.92rem;color:var(--mu);background:none;border:0;border-radius:9px;padding:9px 16px;cursor:pointer}
+.seg button.on{color:#fff;background:linear-gradient(110deg,rgba(255,63,164,.3),rgba(139,92,255,.4))}
+.file{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.file span{color:var(--mu);font-size:.92rem;overflow-wrap:anywhere}
+.help{margin-top:18px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:rgba(139,92,255,.1);border:1px solid rgba(139,92,255,.35);border-radius:14px;padding:14px 16px}
+.help p{flex:1;min-width:200px;font-size:.92rem;color:#d8d2ee}
+.prog{margin:4px 0 14px}
+.prog .bar{height:8px;border-radius:99px;background:var(--field);overflow:hidden;border:1px solid var(--line)}
+.prog .bar i{display:block;height:100%;width:0;background:var(--grad);transition:width .2s}
+.prog p{font-size:.9rem;color:var(--mu);margin-top:8px}
+
+/* Vista previa: así lo verá el jugador en la app */
+.prev{position:sticky;top:88px;display:grid;gap:18px}
+.prev .lbl{font-size:.92rem;color:var(--mu)}
+.phone{width:100%;max-width:300px;border-radius:26px;overflow:hidden;background:#07040f;border:1px solid rgba(139,92,255,.5);box-shadow:0 24px 70px -24px rgba(139,92,255,.7)}
+.ph-hero{position:relative;aspect-ratio:16/11;background:linear-gradient(160deg,#ff3fa4,#3a1d8f 60%,#150a3c)}
+.ph-hero img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.ph-hero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:42%;background:linear-gradient(transparent,#1d1043)}
+.ph-info{padding:16px 18px 18px;background:linear-gradient(#1d1043,#130a31);border-radius:0 0 26px 26px}
+.ph-info h3{font-size:1.3rem;line-height:1.2;overflow-wrap:anywhere}
+.ph-info p{color:var(--mu);font-size:.9rem;margin-top:3px}
+.ph-btn{margin-top:14px;text-align:center;font-weight:700;border-radius:999px;padding:12px;background:var(--grad);font-size:.95rem}
+.ph-body{padding:16px 18px 20px}
+.ph-sz{font-size:.88rem;color:var(--mu);margin-bottom:12px}
+.ph-d{font-size:.9rem;line-height:1.55;color:#d8d2ee;overflow-wrap:anywhere;white-space:pre-line}
+.tilew{display:flex;align-items:center;gap:14px}
+.tile{width:92px;aspect-ratio:1;border-radius:10px;overflow:hidden;background:linear-gradient(160deg,#ff3fa4,#3a1d8f 60%,#150a3c);box-shadow:0 0 0 1px rgba(190,150,255,.25),0 8px 20px rgba(0,0,0,.45)}
+.tile img{width:100%;height:100%;object-fit:cover;display:block}
+.tilew span{font-size:.85rem;color:var(--mu)}
+
+/* Mis juegos */
+.list{display:grid;gap:12px}
+.item{display:grid;grid-template-columns:64px 1fr auto;gap:16px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:12px 16px 12px 12px}
+.item img,.item .ph{width:64px;height:64px;border-radius:12px;object-fit:cover;background:var(--panel2)}
+.item strong{display:block;overflow-wrap:anywhere}
+.item span{color:var(--mu);font-size:.88rem}
+.item .acts{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.empty{border:1px dashed var(--line);border-radius:16px;padding:32px;text-align:center;color:var(--mu)}
+
+/* Guía APK */
+dialog{margin:auto;width:min(620px,calc(100% - 24px));max-height:calc(100% - 32px);overflow:auto;color:var(--tx);background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:26px}
+dialog::backdrop{background:rgba(4,2,12,.8)}
+dialog h2{margin-bottom:8px}
+dialog .x{float:right;background:none;border:0;color:var(--mu);font-size:1.6rem;line-height:1;cursor:pointer}
+dialog p{color:#d8d2ee;font-size:.95rem}
+details{border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-top:12px;background:var(--field)}
+summary{cursor:pointer;font-weight:700}
+details ol{margin:12px 0 0 20px;display:grid;gap:8px;color:#d8d2ee;font-size:.93rem}
+details p{margin-top:10px}
+.contact{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+
+@media(max-width:900px){
+  .login-in{grid-template-columns:1fr;gap:32px}
+  .cols{grid-template-columns:1fr}
+  .prev{position:static;order:-1}
+  .two{grid-template-columns:1fr}
+  .item{grid-template-columns:56px 1fr}
+  .item img,.item .ph{width:56px;height:56px}
+  .item .acts{grid-column:1/-1;justify-content:flex-start}
+  .card{padding:22px}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<!-- Comprobando sesión -->
+<section class="center" id="boot"><p class="brand">Gio Developer</p></section>
+
+<!-- Inicio de sesión -->
+<section class="center login" id="login" hidden>
+  <div class="login-in">
+    <div class="intro">
+      <p class="brand">Gio Developer</p>
+      <h1>Publica tu juego en GioStore</h1>
+      <p class="lead">Entra con el usuario y la contraseña que te entregamos, completa los datos de tu juego y aparecerá en la app al instante.</p>
+    </div>
+    <form class="card" id="lf" novalidate>
+      <h2>Iniciar sesión</h2>
+      <p class="sub">Solo para desarrolladores aprobados.</p>
+      <div class="fld"><label class="lab" for="u">Usuario</label>
+        <input id="u" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="tu usuario">
+      </div>
+      <div class="fld"><label class="lab" for="p">Contraseña</label>
+        <div class="pw">
+          <input id="p" type="password" autocomplete="current-password" placeholder="Tu contraseña">
+          <button type="button" id="eye" aria-label="Mostrar contraseña">Mostrar</button>
+        </div>
+      </div>
+      <p class="msg" id="lmsg" role="alert"></p>
+      <button class="btn" id="lbtn" type="submit">Entrar al panel</button>
+      <p class="hint">¿Aún no tienes acceso? <a id="reqlink" href="#">Solicítalo a Gio Store</a></p>
+    </form>
+  </div>
+</section>
+
+<!-- Cuenta sin permiso de desarrollador -->
+<section class="center" id="denied" hidden>
+  <div class="card denied-in">
+    <h2>Tu cuenta aún no está aprobada</h2>
+    <p>Para publicar juegos, Gio Store tiene que aprobar tu cuenta. Envíale este código para que la active:</p>
+    <div class="uid"><code id="uid"></code><button class="btn ghost sm" id="cpy" type="button">Copiar</button></div>
+    <button class="btn ghost" id="dout" type="button">Cerrar sesión</button>
+  </div>
+</section>
+
+<!-- Panel -->
+<section id="app" hidden>
+  <header class="top">
+    <div class="top-in">
+      <strong class="brand">Gio Developer</strong>
+      <div class="who"><span id="who"></span><button class="btn ghost sm" id="out" type="button">Cerrar sesión</button></div>
+    </div>
+  </header>
+  <main class="wrap">
+    <div class="head">
+      <h1>Mi panel</h1>
+      <p class="lead">Publica y administra tus juegos en GioStore.</p>
+    </div>
+
+    <div class="cols">
+      <form class="card" id="gf" novalidate>
+        <h2 id="ft">Publicar un juego</h2>
+        <p class="sub">Completa todo y mira a la derecha cómo se verá en la app.</p>
+
+        <div class="fld"><label class="lab" for="g_name">Nombre del juego</label>
+          <input id="g_name" maxlength="60" placeholder="Nombre del juego">
+        </div>
+        <div class="fld"><label class="lab" for="g_pub">Desarrollador o estudio</label>
+          <input id="g_pub" maxlength="40" placeholder="Tu nombre o el de tu estudio">
+        </div>
+
+        <div class="sec">
+          <h3>Imágenes</h3>
+          <p class="sub">Sube la imagen y la ajustamos automáticamente.</p>
+          <div class="fld" id="pk_icon"></div>
+          <div class="fld" id="pk_bg"></div>
+        </div>
+
+        <div class="sec">
+          <h3>Descripción</h3>
+          <div class="fld" style="margin-top:12px">
+            <label class="lab" for="g_desc">De qué trata tu juego <small id="cnt">0/800</small></label>
+            <textarea id="g_desc" maxlength="800" placeholder="Cuenta de qué trata, cómo se juega y qué lo hace especial"></textarea>
+          </div>
+        </div>
+
+        <div class="sec">
+          <h3>Descarga</h3>
+          <p class="sub">Sube tu APK o pega un enlace de descarga.</p>
+          <div class="seg" role="tablist">
+            <button type="button" id="m_file" class="on" role="tab">Subir mi APK</button>
+            <button type="button" id="m_link" role="tab">Pegar enlace</button>
+          </div>
+          <div id="ap_file">
+            <div class="file">
+              <button type="button" class="btn ghost sm" id="apbtn">Elegir archivo .apk</button>
+              <span id="apname">Ningún archivo elegido</span>
+            </div>
+            <input type="file" id="apin" accept=".apk,application/vnd.android.package-archive" hidden>
+            <p class="hint">El peso se calcula solo. Máximo <span id="apmax"></span>.</p>
+          </div>
+          <div id="ap_link" hidden>
+            <div class="fld"><label class="lab" for="l_url">Enlace de descarga <small>debe empezar con https://</small></label>
+              <input id="l_url" type="url" inputmode="url" autocapitalize="none" placeholder="https://...">
+            </div>
+            <div class="fld"><label class="lab" for="l_size">Peso del archivo <small>en MB</small></label>
+              <input id="l_size" type="number" inputmode="decimal" min="0.1" step="0.1" placeholder="Ej: 85">
+            </div>
+          </div>
+          <div class="help">
+            <p><b>¿Todavía no tienes un APK?</b> Te explicamos cómo convertir tu juego o web app, o te ayudamos nosotros.</p>
+            <button type="button" class="btn ghost sm" id="helpbtn">Cómo conseguir mi APK</button>
+          </div>
+        </div>
+
+        <div class="sec">
+          <div class="prog" id="prog" hidden><div class="bar"><i id="pbar"></i></div><p id="ptxt"></p></div>
+          <p class="msg" id="gmsg" role="status"></p>
+          <div class="row">
+            <button class="btn" id="save" type="submit">Publicar juego</button>
+            <button class="btn ghost" id="cancel" type="button" hidden>Cancelar edición</button>
+          </div>
+        </div>
+      </form>
+
+      <aside class="prev" aria-label="Vista previa">
+        <div>
+          <p class="lbl" style="margin-bottom:12px">Así lo verá el jugador al abrir tu juego</p>
+          <div class="phone">
+            <div class="ph-hero"><img id="pv_bg" alt="" hidden></div>
+            <div class="ph-info"><h3 id="pv_n">Nombre del juego</h3><p id="pv_p">Tu estudio</p><div class="ph-btn">Obtener gratis</div></div>
+            <div class="ph-body"><p class="ph-sz" id="pv_sz"></p><p class="ph-d" id="pv_d">Aquí aparecerá la descripción de tu juego.</p></div>
+          </div>
+        </div>
+        <div class="tilew"><div class="tile"><img id="pv_ic" alt="" hidden></div><span>Así se verá tu icono en el catálogo</span></div>
+      </aside>
+    </div>
+
+    <h2 class="mt">Mis juegos</h2>
+    <div class="list" id="list"></div>
+  </main>
+</section>
+
+<!-- Guía para conseguir el APK -->
+<dialog id="guide">
+  <button class="x" id="gx" aria-label="Cerrar">&times;</button>
+  <h2>Cómo conseguir el APK de tu juego</h2>
+  <p>El APK es el archivo que instala tu juego en un celular Android. Elige tu caso:</p>
+  <details>
+    <summary>Mi juego es una web (HTML5, PWA o web app)</summary>
+    <ol>
+      <li>Sube tu juego a un hosting con https (Firebase Hosting, Netlify, GitHub Pages…).</li>
+      <li>Entra a pwabuilder.com y pega la dirección de tu juego.</li>
+      <li>Elige Android y descarga el paquete: incluye un archivo .apk para instalar.</li>
+      <li>Instálalo en tu celular, comprueba que abre bien y súbelo aquí.</li>
+    </ol>
+  </details>
+  <details>
+    <summary>Lo hice con Unity, Godot, GDevelop, Construct u otro motor</summary>
+    <ol>
+      <li>Busca la opción de exportar a Android y elige el formato APK (no AAB).</li>
+      <li>En Unity: File → Build Settings → Android → Build, sin marcar «Build App Bundle».</li>
+      <li>En Godot: Project → Export → Android y exporta como APK.</li>
+      <li>Prueba el APK en un celular antes de subirlo.</li>
+    </ol>
+  </details>
+  <details open>
+    <summary>No sé cómo hacerlo</summary>
+    <p>Escríbenos y te ayudamos a convertir tu juego en APK. Cuéntanos con qué lo hiciste y te guiamos.</p>
+    <div class="contact" id="contact"></div>
+  </details>
+  <p style="margin-top:16px;font-size:.88rem;color:var(--mu)">Si tu APK es muy pesado, súbelo a un servicio de almacenamiento y pega el enlace de descarga con su peso en MB.</p>
+</dialog>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+<script>
+/* ---------- Configuración ---------- */
+const firebaseConfig={
+  apiKey:"AIzaSyBMIyvUy5MSnF9rcuzUz0-mNmONyiBvI8w",
+  authDomain:"giostream11.firebaseapp.com",
+  databaseURL:"https://giostream11-default-rtdb.firebaseio.com",
+  projectId:"giostream11",
+  storageBucket:"giostream11.firebasestorage.app",
+  messagingSenderId:"907303340383",
+  appId:"1:907303340383:web:3f5545b847dcbfccf60eea"
+};
+const CFG={
+  userDomain:'devs.giostore.app',              /* el usuario "juan" entra como juan@devs.giostore.app */
+  requestUrl:'https://giostore.web.app/developer.html', /* página "Ser desarrollador" de la web oficial */
+  contactEmail:'giohanguelmo52@gmail.com',     /* correo de ayuda para los desarrolladores */
+  tiktok:'https://www.tiktok.com/@giostore.digital',
+  whatsapp:'',                                 /* opcional: número con código de país, solo dígitos */
+  maxApkMB:500
+};
+
+firebase.initializeApp(firebaseConfig);
+const auth=firebase.auth(),db=firebase.database(),storage=firebase.storage(),SRV=firebase.database.ServerValue;
+const $=id=>document.getElementById(id);
+const DIM={icon:[512,512],bg:[1280,880]};
+let user=null,games=[],editing=null,ST=null,listRef=null,busy=false;
+
+function el(t,c,x){const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e}
+function say(text,type){const m=$('gmsg');m.textContent=text||'';m.className='msg'+(type?' '+type:'')}
+const okUrl=v=>typeof v==='string'&&/^https:\/\/[^\s"'<>\\]+$/i.test(v.trim());
+const fmtMB=mb=>mb>=1024?(mb/1024).toFixed(2).replace(/\.?0+$/,'')+' GB':(Math.round(mb*10)/10)+' MB';
+function show(v){['boot','login','denied','app'].forEach(x=>$(x).hidden=x!==v)}
+
+/* ---------- Sesión y permisos ---------- */
+$('reqlink').href=CFG.requestUrl;
+const toEmail=v=>{v=v.trim().toLowerCase();return v.includes('@')?v:v+'@'+CFG.userDomain};
+function authError(c){
+  if(/invalid-credential|wrong-password|user-not-found|invalid-login/.test(c))return 'Usuario o contraseña incorrectos.';
+  return({'auth/too-many-requests':'Demasiados intentos. Espera unos minutos e inténtalo de nuevo.','auth/user-disabled':'Esta cuenta está desactivada. Contacta a Gio Store.','auth/network-request-failed':'Sin conexión. Revisa tu internet e inténtalo de nuevo.','auth/invalid-email':'Escribe un usuario válido.'})[c]||'No pudimos iniciar sesión. Inténtalo de nuevo.';
+}
+$('eye').onclick=()=>{const p=$('p'),s=p.type==='password';p.type=s?'text':'password';$('eye').textContent=s?'Ocultar':'Mostrar'};
+$('lf').onsubmit=async e=>{
+  e.preventDefault();
+  const u=$('u').value.trim(),p=$('p').value,m=$('lmsg');
+  if(!u||!p){m.textContent='Escribe tu usuario y tu contraseña.';m.className='msg err';return}
+  $('lbtn').disabled=true;m.textContent='';
+  try{await auth.signInWithEmailAndPassword(toEmail(u),p);$('p').value=''}
+  catch(err){m.textContent=authError(err.code||'');m.className='msg err'}
+  $('lbtn').disabled=false;
+};
+$('out').onclick=$('dout').onclick=()=>auth.signOut();
+$('cpy').onclick=async()=>{try{await navigator.clipboard.writeText($('uid').textContent);$('cpy').textContent='Copiado'}catch(e){}};
+
+auth.onAuthStateChanged(async u=>{
+  user=u;stopList();
+  if(!u){show('login');return}
+  show('boot');
+  let ok=false;
+  try{ok=(await db.ref('developers/'+u.uid).once('value')).val()===true}catch(e){console.warn('Permisos:',e.code||e)}
+  if(user!==u)return;
+  if(!ok){$('uid').textContent=u.uid;$('cpy').textContent='Copiar';show('denied');return}
+  $('who').textContent=(u.email||'').replace('@'+CFG.userDomain,'');
+  show('app');resetForm();startList();
+});
+
+/* ---------- Imágenes ---------- */
+function pickHTML(k,title,hint){
+  return '<span class="lab">'+title+'<small>'+hint+'</small></span>'+
+  '<button type="button" class="drop '+k+'" id="d_'+k+'"><img alt="" hidden><span class="dt">Elegir imagen</span></button>'+
+  '<input type="file" id="f_'+k+'" accept="image/*" hidden>'+
+  '<p class="alt"><button type="button" class="lnk" id="t_'+k+'">Usar un enlace en vez de subir</button></p>'+
+  '<input type="url" class="lin" id="u_'+k+'" placeholder="https://..." autocapitalize="none" hidden>';
+}
+$('pk_icon').innerHTML=pickHTML('icon','Icono del juego','cuadrado, se ve en el catálogo');
+$('pk_bg').innerHTML=pickHTML('bg','Fondo del juego','horizontal, se ve arriba al abrir tu juego');
+
+function fitImage(file,w,h){
+  return new Promise((res,rej)=>{
+    const img=new Image(),url=URL.createObjectURL(file);
+    img.onload=()=>{URL.revokeObjectURL(url);
+      const c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d');
+      x.fillStyle='#140b2c';x.fillRect(0,0,w,h);
+      const s=Math.max(w/img.width,h/img.height),dw=img.width*s,dh=img.height*s;
+      x.drawImage(img,(w-dw)/2,(h-dh)/2,dw,dh);
+      c.toBlob(b=>b?res(b):rej(new Error('blob')),'image/jpeg',.86)};
+    img.onerror=()=>{URL.revokeObjectURL(url);rej(new Error('img'))};
+    img.src=url;
+  });
+}
+function paintImg(k){
+  const o=ST[k],b=$('d_'+k),i=b.querySelector('img'),t=b.querySelector('.dt');
+  if(o.prev){i.src=o.prev;i.hidden=false;t.textContent='Cambiar imagen'}else{i.hidden=true;i.removeAttribute('src');t.textContent='Elegir imagen'}
+  const pv=$(k==='icon'?'pv_ic':'pv_bg');
+  if(o.prev){pv.src=o.prev;pv.hidden=false}else{pv.hidden=true;pv.removeAttribute('src')}
+}
+['icon','bg'].forEach(k=>{
+  $('d_'+k).onclick=()=>$('f_'+k).click();
+  $('t_'+k).onclick=()=>{const u=$('u_'+k);u.hidden=!u.hidden;$('t_'+k).textContent=u.hidden?'Usar un enlace en vez de subir':'Mejor subir una imagen';if(!u.hidden)u.focus()};
+  $('f_'+k).onchange=async e=>{
+    const f=e.target.files[0];e.target.value='';if(!f)return;
+    if(!/^image\//.test(f.type)){say('Elige una imagen (JPG, PNG o WebP).','err');return}
+    if(f.size>25*1048576){say('La imagen es muy grande. Usa una de menos de 25 MB.','err');return}
+    try{
+      const blob=await fitImage(f,DIM[k][0],DIM[k][1]);
+      if(ST[k].blobUrl)URL.revokeObjectURL(ST[k].blobUrl);
+      const bu=URL.createObjectURL(blob);
+      ST[k]=Object.assign(ST[k],{blob,blobUrl:bu,prev:bu});$('u_'+k).value='';say('');paintImg(k);
+    }catch(er){say('No pudimos leer esa imagen. Prueba con otra.','err')}
+  };
+  $('u_'+k).oninput=e=>{
+    const v=e.target.value.trim();
+    if(okUrl(v)){ST[k]=Object.assign(ST[k],{blob:null,url:v,prev:v})}
+    else if(!v&&!ST[k].blob){ST[k]=Object.assign(ST[k],{url:'',prev:''})}
+    paintImg(k);
+  };
+});
+
+/* ---------- Descarga (APK o enlace) ---------- */
+$('apmax').textContent=CFG.maxApkMB+' MB';
+function setMode(m){ST.apk.mode=m;paintApk()}
+$('m_file').onclick=()=>setMode('file');
+$('m_link').onclick=()=>setMode('link');
+$('apbtn').onclick=()=>$('apin').click();
+$('apin').onchange=e=>{
+  const f=e.target.files[0];e.target.value='';if(!f)return;
+  if(!/\.apk$/i.test(f.name)){say('El archivo debe terminar en .apk','err');return}
+  if(f.size>CFG.maxApkMB*1048576){say('El APK pesa más de '+CFG.maxApkMB+' MB. Súbelo a un servicio de almacenamiento y pega el enlace.','err');return}
+  ST.apk.file=f;say('');paintApk();preview();
+};
+$('l_url').oninput=e=>{ST.apk.linkUrl=e.target.value.trim();preview()};
+$('l_size').oninput=e=>{ST.apk.linkSize=parseFloat(e.target.value)||0;preview()};
+function paintApk(){
+  const a=ST.apk;
+  $('m_file').classList.toggle('on',a.mode==='file');$('m_link').classList.toggle('on',a.mode==='link');
+  $('ap_file').hidden=a.mode!=='file';$('ap_link').hidden=a.mode!=='link';
+  $('apname').textContent=a.file?a.file.name+' ('+fmtMB(a.file.size/1048576)+')':(a.path?'APK actual subido ('+fmtMB(a.fileSize)+')':'Ningún archivo elegido');
+  preview();
+}
+function dl(){
+  const a=ST.apk;
+  if(a.mode==='file'){
+    if(a.file)return{ok:true,upload:true,size:a.file.size/1048576};
+    if(a.path)return{ok:true,upload:false,url:a.fileUrl,size:a.fileSize};
+    return{ok:false};
+  }
+  return{ok:okUrl(a.linkUrl)&&a.linkSize>0,upload:false,url:a.linkUrl,size:a.linkSize};
+}
+
+/* ---------- Guía de ayuda ---------- */
+(function(){
+  const c=$('contact'),subj=encodeURIComponent('Ayuda para convertir mi juego en APK');
+  const a1=el('a','btn sm','Escribir por correo');a1.href='mailto:'+CFG.contactEmail+'?subject='+subj;c.append(a1);
+  if(CFG.whatsapp){const w=el('a','btn ghost sm','WhatsApp');w.href='https://wa.me/'+CFG.whatsapp.replace(/\D/g,'');w.target='_blank';w.rel='noopener';c.append(w)}
+  const t=el('a','btn ghost sm','TikTok');t.href=CFG.tiktok;t.target='_blank';t.rel='noopener';c.append(t);
+})();
+$('helpbtn').onclick=()=>$('guide').showModal();
+$('gx').onclick=()=>$('guide').close();
+$('guide').addEventListener('click',e=>{if(e.target===$('guide'))$('guide').close()});
+
+/* ---------- Vista previa ---------- */
+const ptxt=()=>({name:$('g_name').value.trim(),pub:$('g_pub').value.trim(),desc:$('g_desc').value.trim()});
+function preview(){
+  const t=ptxt(),d=dl();
+  $('pv_n').textContent=t.name||'Nombre del juego';
+  $('pv_p').textContent=t.pub||'Tu estudio';
+  $('pv_d').textContent=t.desc||'Aquí aparecerá la descripción de tu juego.';
+  $('pv_sz').textContent=d.size>0?'Tamaño: '+fmtMB(d.size):'';
+  $('cnt').textContent=$('g_desc').value.length+'/800';
+}
+['g_name','g_pub','g_desc'].forEach(id=>$(id).addEventListener('input',preview));
+
+/* ---------- Formulario ---------- */
+function blank(){return{
+  icon:{blob:null,blobUrl:'',url:'',prev:''},
+  bg:{blob:null,blobUrl:'',url:'',prev:''},
+  apk:{mode:'file',file:null,path:'',fileUrl:'',fileSize:0,linkUrl:'',linkSize:0}}}
+function resetForm(){
+  ['icon','bg'].forEach(k=>{if(ST&&ST[k].blobUrl)URL.revokeObjectURL(ST[k].blobUrl)});
+  editing=null;ST=blank();$('gf').reset();say('');
+  ['icon','bg'].forEach(k=>{$('u_'+k).hidden=true;$('u_'+k).value='';$('t_'+k).textContent='Usar un enlace en vez de subir';paintImg(k)});
+  $('l_url').value='';$('l_size').value='';
+  $('ft').textContent='Publicar un juego';$('save').textContent='Publicar juego';$('cancel').hidden=true;
+  $('prog').hidden=true;paintApk();
+}
+$('cancel').onclick=resetForm;
+function validate(){
+  const t=ptxt();
+  if(!t.name)return 'Escribe el nombre del juego.';
+  if(!ST.icon.blob&&!okUrl(ST.icon.url))return 'Falta el icono del juego.';
+  if(!ST.bg.blob&&!okUrl(ST.bg.url))return 'Falta el fondo del juego.';
+  if(!t.desc)return 'Escribe la descripción del juego.';
+  const d=dl();
+  if(!d.ok){
+    if(ST.apk.mode==='file')return 'Elige el archivo APK de tu juego, o cambia a «Pegar enlace».';
+    if(!okUrl(ST.apk.linkUrl))return 'El enlace de descarga debe empezar con https://';
+    return 'Escribe el peso del archivo en MB.';
+  }
+  return '';
+}
+function prog(text,p){$('prog').hidden=false;$('ptxt').textContent=text;$('pbar').style.width=Math.round((p||0)*100)+'%'}
+function upload(path,blob,meta,onp){
+  return new Promise((res,rej)=>{
+    const t=storage.ref(path).put(blob,meta);
+    t.on('state_changed',s=>{if(onp)onp(s.bytesTransferred/s.totalBytes)},rej,async()=>{try{res(await t.snapshot.ref.getDownloadURL())}catch(e){rej(e)}});
+  });
+}
+const rmFile=p=>p?storage.ref(p).delete().catch(()=>{}):0;
+function saveError(e){
+  const c=(e&&e.code)||'';
+  if(c==='PERMISSION_DENIED'||c==='storage/unauthorized')return 'No tienes permiso para publicar. Contacta a Gio Store.';
+  if(/storage\/(unknown|bucket-not-found|project-not-found|quota-exceeded)/.test(c))return 'El almacenamiento de archivos aún no está activado. Usa un enlace en vez de subir, o avisa a Gio Store.';
+  if(c==='storage/canceled')return 'Se canceló la subida.';
+  if(c==='storage/retry-limit-exceeded'||c==='storage/network-request-failed')return 'Se cortó la conexión mientras subíamos. Inténtalo de nuevo.';
+  return 'No pudimos publicar el juego. Revisa tu conexión e inténtalo de nuevo.';
+}
+$('gf').onsubmit=async e=>{
+  e.preventDefault();
+  if(!user||busy)return;
+  const err=validate();
+  if(err){say(err,'err');return}
+  busy=true;$('save').disabled=true;say('');
+  const t=ptxt(),old=editing||{},id=editing?editing.id:db.ref('games').push().key,base='games/'+user.uid+'/'+id+'/',fresh=[],trash=[];
+  try{
+    let icon=ST.icon.url,iconPath=old.iconPath||null,bg=ST.bg.url,bgPath=old.bgPath||null;
+    if(ST.icon.blob){
+      prog('Subiendo el icono…',0);const p=base+'icon-'+Date.now()+'.jpg';
+      icon=await upload(p,ST.icon.blob,{contentType:'image/jpeg',cacheControl:'public,max-age=31536000'});fresh.push(p);
+      if(old.iconPath)trash.push(old.iconPath);iconPath=p;
+    }else if(old.iconPath&&ST.icon.url!==old.icon){trash.push(old.iconPath);iconPath=null}
+    if(ST.bg.blob){
+      prog('Subiendo el fondo…',0);const p=base+'bg-'+Date.now()+'.jpg';
+      bg=await upload(p,ST.bg.blob,{contentType:'image/jpeg',cacheControl:'public,max-age=31536000'});fresh.push(p);
+      if(old.bgPath)trash.push(old.bgPath);bgPath=p;
+    }else if(old.bgPath&&ST.bg.url!==old.bg){trash.push(old.bgPath);bgPath=null}
+    const d=dl();let url=d.url,apkPath=old.apkPath||null;
+    if(ST.apk.mode==='file'&&ST.apk.file){
+      const slug=(t.name.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9]+/g,'-').replace(/^-|-$/g,'')||'juego').slice(0,40);
+      const p=base+'game-'+Date.now()+'.apk';
+      url=await upload(p,ST.apk.file,{contentType:'application/vnd.android.package-archive',contentDisposition:'attachment; filename="'+slug+'.apk"'},pc=>prog('Subiendo tu APK… '+Math.round(pc*100)+'%',pc));
+      fresh.push(p);if(old.apkPath)trash.push(old.apkPath);apkPath=p;
+    }else if(ST.apk.mode==='link'){if(old.apkPath)trash.push(old.apkPath);apkPath=null}
+    prog('Publicando en la tienda…',1);
+    const rec={name:t.name,pub:t.pub,desc:t.desc,icon,bg,url,sizeMB:Math.max(0.1,Math.round(d.size*10)/10),
+      iconPath,bgPath,apkPath,ownerUid:user.uid,updatedAt:SRV.TIMESTAMP};
+    if(editing)await db.ref('games/'+id).update(rec);
+    else{rec.createdAt=SRV.TIMESTAMP;await db.ref('games/'+id).set(rec)}
+    trash.forEach(rmFile);
+    const was=!!editing;resetForm();say(was?'Cambios guardados. Ya se ven en la app.':'Juego publicado. Ya aparece en la app.','ok');
+  }catch(er){
+    console.error(er);fresh.forEach(rmFile);$('prog').hidden=true;say(saveError(er),'err');
+  }
+  busy=false;$('save').disabled=false;
+};
+
+/* ---------- Mis juegos ---------- */
+function stopList(){if(listRef){listRef.off();listRef=null}games=[];$('list').replaceChildren()}
+function startList(){
+  stopList();
+  listRef=db.ref('games').orderByChild('ownerUid').equalTo(user.uid);
+  listRef.on('value',s=>{
+    games=[];s.forEach(c=>{games.push(Object.assign({id:c.key},c.val()))});
+    games.sort((a,b)=>(b.createdAt||Infinity)-(a.createdAt||Infinity));renderList();
+  },er=>{console.error(er);$('list').replaceChildren(el('div','empty','No pudimos cargar tus juegos. Recarga la página.'))});
+}
+function renderList(){
+  const L=$('list');L.replaceChildren();
+  if(!games.length){L.append(el('div','empty','Todavía no publicaste ningún juego. Completa el formulario para publicar el primero.'));return}
+  games.forEach(g=>{
+    const it=el('div','item');
+    if(okUrl(g.icon)){const i=el('img');i.alt='';i.loading='lazy';i.src=g.icon;i.onerror=()=>i.replaceWith(el('div','ph'));it.append(i)}else it.append(el('div','ph'));
+    const t=el('div');t.append(el('strong','',g.name||''),el('span','',(g.pub||'GioStore')+(g.sizeMB?' · '+fmtMB(g.sizeMB):'')));it.append(t);
+    const acts=el('div','acts');
+    const ed=el('button','btn ghost sm','Editar');ed.type='button';ed.onclick=()=>editGame(g);
+    const del=el('button','btn danger sm','Eliminar');del.type='button';del.onclick=()=>removeGame(g);
+    acts.append(ed,del);it.append(acts);L.append(it);
+  });
+}
+function editGame(g){
+  resetForm();editing=g;
+  $('g_name').value=g.name||'';$('g_pub').value=g.pub||'';$('g_desc').value=g.desc||'';
+  ST.icon.url=g.icon||'';ST.icon.prev=g.icon||'';ST.bg.url=g.bg||'';ST.bg.prev=g.bg||'';
+  if(g.apkPath)Object.assign(ST.apk,{mode:'file',path:g.apkPath,fileUrl:g.url,fileSize:g.sizeMB||0});
+  else Object.assign(ST.apk,{mode:'link',linkUrl:g.url||'',linkSize:g.sizeMB||0});
+  $('l_url').value=ST.apk.linkUrl;$('l_size').value=ST.apk.linkSize||'';
+  ['icon','bg'].forEach(paintImg);paintApk();
+  $('ft').textContent='Editar juego';$('save').textContent='Guardar cambios';$('cancel').hidden=false;
+  $('gf').scrollIntoView({behavior:'smooth',block:'start'});
+}
+async function removeGame(g){
+  if(!confirm('¿Eliminar «'+g.name+'» de la tienda? Esta acción no se puede deshacer.'))return;
+  try{
+    await db.ref('games/'+g.id).remove();
+    [g.iconPath,g.bgPath,g.apkPath].forEach(rmFile);
+    if(editing&&editing.id===g.id)resetForm();
+    say('Juego eliminado de la tienda.','ok');
+  }catch(er){console.error(er);say('No pudimos eliminar el juego. Inténtalo de nuevo.','err')}
+}
+</script>
+</body>
+</html>

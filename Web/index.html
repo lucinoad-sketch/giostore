@@ -18,7 +18,9 @@
 @keyframes posterIn{from{opacity:0;translate:0 70px;scale:.92}to{opacity:1;translate:0 0;scale:1}}
 @keyframes posterFloat{0%,100%{translate:0 0}50%{translate:0 -12px}}
 /* Acceso al panel de desarrolladores */
+.nav-cta .btn{white-space:nowrap;flex-shrink:0}
 .nav-cta .dev-login{white-space:nowrap}
+@media(max-width:1180px){.nav-cta .btn{padding-left:16px;padding-right:16px;font-size:14px}.nav-cta .dev-login i{display:none}}
 .dev-actions{display:flex;gap:10px;flex-wrap:wrap}
 @media(max-width:1000px){.nav-cta .dev-login{display:none}}
 </style>
