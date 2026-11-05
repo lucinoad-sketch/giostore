@@ -296,6 +296,7 @@ dialog{border-radius:22px;animation:pop .35s both}
       </div>
       <p class="msg" id="lmsg" role="alert"></p>
       <button class="btn" id="lbtn" type="submit">Entrar al panel <i class="fa-solid fa-arrow-right"></i></button>
+      <p class="hint" style="opacity:.55;margin-top:10px;font-size:.78rem">Versión 3.1</p>
       <p class="hint">¿Aún no tienes acceso? <a id="reqlink" href="#">Solicítalo a Gio Store</a></p>
     </form>
   </div>
@@ -468,6 +469,7 @@ const CFG={
 
 firebase.initializeApp(firebaseConfig);
 const auth=firebase.auth(),db=firebase.database(),storage=firebase.storage(),SRV=firebase.database.ServerValue;
+try{storage.setMaxUploadRetryTime(60000);storage.setMaxOperationRetryTime(30000)}catch(e){}
 const $=id=>document.getElementById(id);
 const DIM={icon:[512,512],bg:[1280,880]};
 let user=null,games=[],editing=null,ST=null,listRef=null,busy=false;
@@ -491,7 +493,7 @@ $('lf').onsubmit=async e=>{
   const u=$('u').value.trim(),p=$('p').value,m=$('lmsg');
   if(!u||!p){m.textContent='Escribe tu usuario y tu contraseña.';m.className='msg err';return}
   $('lbtn').disabled=true;m.textContent='';
-  try{const cr=await auth.signInWithEmailAndPassword(toEmail(u),p);$('p').value='';show('boot');enter(cr.user)}
+  try{const cr=await auth.signInWithEmailAndPassword(toEmail(u),p);$('p').value='';if(entered!==cr.user.uid)enter(cr.user)}
   catch(err){m.textContent=authError(err.code||'');m.className='msg err'}
   $('lbtn').disabled=false;
 };
@@ -504,6 +506,7 @@ auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(()=>auth.setPers
 let seq=0,entered=null;
 async function enter(u){
   if(entered===u.uid)return;entered=u.uid;
+  try{
   const my=++seq;user=u;stopList();show('boot');
   let ok=false,fail=null;
   if((u.email||'').toLowerCase()===CFG.adminEmail)ok=true;
@@ -517,12 +520,19 @@ async function enter(u){
   $('who').textContent=(u.email||'').replace('@'+CFG.userDomain,'');
   show('app');
   try{resetForm();startList()}catch(e){console.error(e)}
+  }catch(e){
+    console.error(e);entered=null;show('login');
+    const m=$('lmsg');m.textContent='No pudimos abrir tu panel ('+(e.code||e.message||'error')+'). Inténtalo de nuevo.';m.className='msg err';
+  }
 }
 let nullT=0;
 function toLogin(){seq++;entered=null;user=null;stopList();show('login')}
+let firstEv=true;
 auth.onAuthStateChanged(u=>{
   clearTimeout(nullT);
+  const first=firstEv;firstEv=false;
   if(u){enter(u);return}
+  if(first){toLogin();return}
   /* Un aviso de sesión vacío que no viene de «Cerrar sesión» se ignora si la cuenta sigue activa */
   if(manual){manual=false;toLogin();return}
   nullT=setTimeout(()=>{if(auth.currentUser)return;toLogin()},2500);
@@ -664,17 +674,32 @@ function validate(){
   return '';
 }
 function prog(text,p){$('prog').hidden=false;$('ptxt').textContent=text;$('pbar').style.width=Math.round((p||0)*100)+'%'}
-function upload(path,blob,meta,onp){
-  return new Promise((res,rej)=>{
+const timeout=(ms,code)=>new Promise((_,rej)=>setTimeout(()=>rej(Object.assign(new Error(code),{code})),ms));
+function upload(path,blob,meta,onp,stallMs){
+  stallMs=stallMs||20000;
+  const once=()=>new Promise((res,rej)=>{
     const t=storage.ref(path).put(blob,meta);
-    t.on('state_changed',s=>{if(onp)onp(s.bytesTransferred/s.totalBytes)},rej,async()=>{try{res(await t.snapshot.ref.getDownloadURL())}catch(e){rej(e)}});
+    let last=Date.now(),lastB=-1,dead=false;
+    /* si no avanza ni un byte en stallMs, se corta y se avisa (antes se quedaba colgado para siempre) */
+    const wd=setInterval(()=>{
+      if(Date.now()-last>stallMs){dead=true;clearInterval(wd);try{t.cancel()}catch(e){}rej(Object.assign(new Error('stalled'),{code:'storage/stalled'}))}
+    },1000);
+    t.on('state_changed',s=>{
+      if(s.bytesTransferred!==lastB){lastB=s.bytesTransferred;last=Date.now()}
+      if(onp&&!dead)onp(s.totalBytes?s.bytesTransferred/s.totalBytes:0);
+    },e=>{clearInterval(wd);if(!dead)rej(e)},async()=>{
+      clearInterval(wd);
+      try{res(await Promise.race([t.snapshot.ref.getDownloadURL(),timeout(15000,'storage/stalled')]))}catch(e){rej(e)}
+    });
   });
+  return once().catch(e=>{if(e&&e.code==='storage/stalled'){console.warn('Subida trabada, reintentando…');return once()}throw e});
 }
 const rmFile=p=>p?storage.ref(p).delete().catch(()=>{}):0;
 function saveError(e){
   const c=(e&&e.code)||'';
   if(c==='PERMISSION_DENIED'||c==='storage/unauthorized')return 'No tienes permiso para publicar. Contacta a Gio Store.';
   if(/storage\/(unknown|bucket-not-found|project-not-found|quota-exceeded)/.test(c))return 'El almacenamiento de archivos aún no está activado. Usa un enlace en vez de subir, o avisa a Gio Store.';
+  if(c==='storage/stalled')return 'La subida se quedó trabada y no avanzó. Revisa tu internet y que Firebase Storage esté activado con reglas que permitan games/{uid}/. Mientras tanto puedes usar «Usar un enlace en vez de subir».';
   if(c==='storage/canceled')return 'Se canceló la subida.';
   if(c==='storage/retry-limit-exceeded'||c==='storage/network-request-failed')return 'Se cortó la conexión mientras subíamos. Inténtalo de nuevo.';
   return 'No pudimos publicar el juego. Revisa tu conexión e inténtalo de nuevo.';
@@ -685,6 +710,7 @@ $('gf').onsubmit=async e=>{
   const err=validate();
   if(err){say(err,'err');return}
   busy=true;$('save').disabled=true;say('');
+  try{await Promise.race([(auth.currentUser||user).getIdToken(true),timeout(10000,'token')])}catch(e){console.warn('Token:',e)}
   const t=ptxt(),old=editing||{},id=editing?editing.id:db.ref('games').push().key,base='games/'+user.uid+'/'+id+'/',fresh=[],trash=[];
   try{
     let icon=ST.icon.url,iconPath=old.iconPath||null,bg=ST.bg.url,bgPath=old.bgPath||null;
@@ -702,7 +728,7 @@ $('gf').onsubmit=async e=>{
     if(ST.apk.mode==='file'&&ST.apk.file){
       const slug=(t.name.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9]+/g,'-').replace(/^-|-$/g,'')||'juego').slice(0,40);
       const p=base+'game-'+Date.now()+'.apk';
-      url=await upload(p,ST.apk.file,{contentType:'application/vnd.android.package-archive',contentDisposition:'attachment; filename="'+slug+'.apk"'},pc=>prog('Subiendo tu APK… '+Math.round(pc*100)+'%',pc));
+      url=await upload(p,ST.apk.file,{contentType:'application/vnd.android.package-archive',contentDisposition:'attachment; filename="'+slug+'.apk"'},pc=>prog('Subiendo tu APK… '+Math.round(pc*100)+'%',pc),60000);
       fresh.push(p);if(old.apkPath)trash.push(old.apkPath);apkPath=p;
     }else if(ST.apk.mode==='link'){if(old.apkPath)trash.push(old.apkPath);apkPath=null}
     prog('Publicando en la tienda…',1);
