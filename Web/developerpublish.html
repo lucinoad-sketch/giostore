@@ -8,8 +8,10 @@
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Albert+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Albert+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Albert+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"></noscript>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
 <style>
 :root{--bg:#07040f;--panel:#120b22;--panel2:#1a1030;--field:#0d0818;--line:rgba(255,255,255,.11);--tx:#f4f0fc;--mu:#a99ec6;--pink:#ff3fa4;--vio:#8b5cff;--blu:#5b8cff;--err:#ff7b95;--ok:#4ade80;--grad:linear-gradient(135deg,#ff3fa4,#8b5cff 55%,#5b8cff)}
 *{box-sizing:border-box;margin:0}
@@ -267,6 +269,41 @@ dialog{border-radius:22px;animation:pop .35s both}
 .btn i{margin-left:6px;transition:transform .2s}.btn:hover i{transform:translateX(3px)}
 #ft::before{font-family:'Font Awesome 6 Free';font-weight:900;content:'\f135';margin-right:10px;color:var(--vio)}
 .top-in .brand i{font-size:1.05em}
+
+/* ===== v3.2: celular y fluidez ===== */
+body{background-image:none;overflow-x:hidden;-webkit-tap-highlight-color:transparent}
+button,.btn,.drop,.seg button,summary,.lnk{touch-action:manipulation}
+/* Fondo: degradados estáticos (sin blur gigante ni animación infinita, que traban el celular) */
+body::before,body::after{inset:0;width:auto;height:auto;border-radius:0;filter:none;opacity:1;animation:none}
+body::before{background:radial-gradient(560px 440px at 0 0,rgba(139,92,255,.28),transparent 70%)}
+body::after{background:radial-gradient(520px 420px at 100% 100%,rgba(255,63,164,.2),transparent 70%)}
+.card{-webkit-backdrop-filter:none;backdrop-filter:none}
+.top{-webkit-backdrop-filter:none;backdrop-filter:none;background:rgba(10,6,20,.96)}
+.brand{animation:none}
+.phone{animation:none}
+@media(hover:hover) and (min-width:901px){
+  .top{-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);background:rgba(10,6,20,.78)}
+  #boot .brand,.top-in .brand{animation:shine 5s linear infinite}
+  .phone{animation:floaty 5s ease-in-out infinite}
+}
+/* Animaciones de entrada más cortas y sin repetirse al refrescar la lista */
+@keyframes up{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+section:not([hidden]),#app main>*,#app .wrap>*,.sec{animation-duration:.4s}
+.item,.game,.mine>*{animation:none}
+@media(hover:none){input:focus,select:focus,textarea:focus{transform:none}}
+.drop.over{border-color:var(--pink);background:#1a0f30}
+#ap_file.over{outline:2px dashed var(--vio);outline-offset:6px;border-radius:14px}
+.prog .lnk{margin-top:8px;color:var(--err)}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));z-index:80;max-width:calc(100vw - 32px);padding:14px 20px;border-radius:14px;background:#241546;border:1px solid rgba(139,92,255,.55);box-shadow:0 18px 50px -12px rgba(0,0,0,.8);font-weight:600;font-size:.95rem;text-align:center;opacity:0;visibility:hidden;transform:translate(-50%,16px);transition:opacity .25s,transform .25s,visibility .25s}
+.toast.show{opacity:1;visibility:visible;transform:translate(-50%,0)}
+.toast.err{border-color:rgba(255,123,149,.7)}.toast.ok{border-color:rgba(74,222,128,.6)}
+@media(max-width:900px){.prev{order:2;position:static}.prev .lbl{text-align:center}}
+@media(max-width:700px){
+  /* Barra de publicar fija abajo (antes quedaba atrapada dentro de su fila) */
+  #save{position:static;box-shadow:0 8px 24px rgba(139,92,255,.35)}
+  #gf>.sec:last-child{position:sticky;bottom:0;z-index:4;margin:20px -18px -20px;padding:14px 18px calc(12px + env(safe-area-inset-bottom));background:linear-gradient(180deg,rgba(18,11,34,0),#120b22 30%);border-top:0}
+  .toast{bottom:calc(96px + env(safe-area-inset-bottom))}
+}
 </style>
 </head>
 <body>
@@ -296,7 +333,7 @@ dialog{border-radius:22px;animation:pop .35s both}
       </div>
       <p class="msg" id="lmsg" role="alert"></p>
       <button class="btn" id="lbtn" type="submit">Entrar al panel <i class="fa-solid fa-arrow-right"></i></button>
-      <p class="hint" style="opacity:.55;margin-top:10px;font-size:.78rem">Versión 3.1</p>
+      <p class="hint" style="opacity:.55;margin-top:10px;font-size:.78rem">Versión 3.2</p>
       <p class="hint">¿Aún no tienes acceso? <a id="reqlink" href="#">Solicítalo a Gio Store</a></p>
     </form>
   </div>
@@ -384,7 +421,7 @@ dialog{border-radius:22px;animation:pop .35s both}
         </div>
 
         <div class="sec">
-          <div class="prog" id="prog" hidden><div class="bar"><i id="pbar"></i></div><p id="ptxt"></p></div>
+          <div class="prog" id="prog" hidden><div class="bar"><i id="pbar"></i></div><p id="ptxt"></p><button type="button" class="lnk" id="pcancel" hidden>Cancelar subida</button></div>
           <p class="msg" id="gmsg" role="status"></p>
           <div class="row">
             <button class="btn" id="save" type="submit">Publicar juego</button>
@@ -442,6 +479,7 @@ dialog{border-radius:22px;animation:pop .35s both}
   <p style="margin-top:16px;font-size:.88rem;color:var(--mu)">Si tu APK es muy pesado, súbelo a un servicio de almacenamiento y pega el enlace de descarga con su peso en MB.</p>
 </dialog>
 
+<div class="toast" id="toast" role="status"></div>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
@@ -475,7 +513,13 @@ const DIM={icon:[512,512],bg:[1280,880]};
 let user=null,games=[],editing=null,ST=null,listRef=null,busy=false;
 
 function el(t,c,x){const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e}
-function say(text,type){const m=$('gmsg');m.textContent=text||'';m.className='msg'+(type?' '+type:'')}
+let toastT;
+function say(text,type){
+  const m=$('gmsg');m.textContent=text||'';m.className='msg'+(type?' '+type:'');
+  const t=$('toast');clearTimeout(toastT);
+  if(text&&type){t.textContent=text;t.className='toast show '+type;toastT=setTimeout(()=>t.classList.remove('show'),4200)}
+  else t.classList.remove('show');
+}
 const okUrl=v=>typeof v==='string'&&/^https:\/\/[^\s"'<>\\]+$/i.test(v.trim());
 const fmtMB=mb=>mb>=1024?(mb/1024).toFixed(2).replace(/\.?0+$/,'')+' GB':(Math.round(mb*10)/10)+' MB';
 function show(v){['boot','login','denied','app'].forEach(x=>$(x).hidden=x!==v)}
@@ -550,18 +594,41 @@ function pickHTML(k,title,hint){
 $('pk_icon').innerHTML=pickHTML('icon','Icono del juego','cuadrado, se ve en el catálogo');
 $('pk_bg').innerHTML=pickHTML('bg','Fondo del juego','horizontal, se ve arriba al abrir tu juego');
 
-function fitImage(file,w,h){
+function loadImg(file){
   return new Promise((res,rej)=>{
     const img=new Image(),url=URL.createObjectURL(file);
-    img.onload=()=>{URL.revokeObjectURL(url);
-      const c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d');
-      x.fillStyle='#140b2c';x.fillRect(0,0,w,h);
-      const s=Math.max(w/img.width,h/img.height),dw=img.width*s,dh=img.height*s;
-      x.drawImage(img,(w-dw)/2,(h-dh)/2,dw,dh);
-      c.toBlob(b=>b?res(b):rej(new Error('blob')),'image/jpeg',.86)};
+    img.onload=()=>{URL.revokeObjectURL(url);res(img)};
     img.onerror=()=>{URL.revokeObjectURL(url);rej(new Error('img'))};
     img.src=url;
   });
+}
+async function fitImage(file,w,h,q){
+  let src=null;
+  if(window.createImageBitmap){try{src=await createImageBitmap(file)}catch(e){src=null}}
+  if(!src)src=await loadImg(file);
+  const sw=src.naturalWidth||src.width,sh=src.naturalHeight||src.height;
+  const c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d');
+  x.fillStyle='#140b2c';x.fillRect(0,0,w,h);x.imageSmoothingQuality='high';
+  const s=Math.max(w/sw,h/sh),dw=sw*s,dh=sh*s;
+  x.drawImage(src,(w-dw)/2,(h-dh)/2,dw,dh);
+  if(src.close)src.close();
+  return new Promise((res,rej)=>c.toBlob(b=>b?res(b):rej(new Error('blob')),'image/jpeg',q||.86));
+}
+async function setImage(k,f){
+  if(!f)return;
+  if(!/^image\//.test(f.type)){say('Elige una imagen (JPG, PNG o WebP).','err');return}
+  if(f.size>25*1048576){say('La imagen es muy grande. Usa una de menos de 25 MB.','err');return}
+  try{
+    const blob=await fitImage(f,DIM[k][0],DIM[k][1]);
+    if(ST[k].blobUrl)URL.revokeObjectURL(ST[k].blobUrl);
+    const bu=URL.createObjectURL(blob);
+    ST[k]=Object.assign(ST[k],{blob,blobUrl:bu,prev:bu});$('u_'+k).value='';say('');paintImg(k);
+  }catch(er){say('No pudimos leer esa imagen. Prueba con otra.','err')}
+}
+function dropZone(node,fn){
+  ['dragenter','dragover'].forEach(ev=>node.addEventListener(ev,e=>{e.preventDefault();node.classList.add('over')}));
+  ['dragleave','drop'].forEach(ev=>node.addEventListener(ev,e=>{e.preventDefault();node.classList.remove('over')}));
+  node.addEventListener('drop',e=>{const f=e.dataTransfer&&e.dataTransfer.files[0];if(f)fn(f)});
 }
 function paintImg(k){
   const o=ST[k],b=$('d_'+k),i=b.querySelector('img'),t=b.querySelector('.dt');
@@ -572,17 +639,8 @@ function paintImg(k){
 ['icon','bg'].forEach(k=>{
   $('d_'+k).onclick=()=>$('f_'+k).click();
   $('t_'+k).onclick=()=>{const u=$('u_'+k);u.hidden=!u.hidden;$('t_'+k).textContent=u.hidden?'Usar un enlace en vez de subir':'Mejor subir una imagen';if(!u.hidden)u.focus()};
-  $('f_'+k).onchange=async e=>{
-    const f=e.target.files[0];e.target.value='';if(!f)return;
-    if(!/^image\//.test(f.type)){say('Elige una imagen (JPG, PNG o WebP).','err');return}
-    if(f.size>25*1048576){say('La imagen es muy grande. Usa una de menos de 25 MB.','err');return}
-    try{
-      const blob=await fitImage(f,DIM[k][0],DIM[k][1]);
-      if(ST[k].blobUrl)URL.revokeObjectURL(ST[k].blobUrl);
-      const bu=URL.createObjectURL(blob);
-      ST[k]=Object.assign(ST[k],{blob,blobUrl:bu,prev:bu});$('u_'+k).value='';say('');paintImg(k);
-    }catch(er){say('No pudimos leer esa imagen. Prueba con otra.','err')}
-  };
+  $('f_'+k).onchange=e=>{const f=e.target.files[0];e.target.value='';setImage(k,f)};
+  dropZone($('d_'+k),f=>setImage(k,f));
   $('u_'+k).oninput=e=>{
     const v=e.target.value.trim();
     if(okUrl(v)){ST[k]=Object.assign(ST[k],{blob:null,url:v,prev:v})}
@@ -597,12 +655,14 @@ function setMode(m){ST.apk.mode=m;paintApk()}
 $('m_file').onclick=()=>setMode('file');
 $('m_link').onclick=()=>setMode('link');
 $('apbtn').onclick=()=>$('apin').click();
-$('apin').onchange=e=>{
-  const f=e.target.files[0];e.target.value='';if(!f)return;
+function setApk(f){
+  if(!f)return;
   if(!/\.apk$/i.test(f.name)){say('El archivo debe terminar en .apk','err');return}
   if(f.size>CFG.maxApkMB*1048576){say('El APK pesa más de '+CFG.maxApkMB+' MB. Súbelo a un servicio de almacenamiento y pega el enlace.','err');return}
   ST.apk.file=f;say('');paintApk();preview();
-};
+}
+$('apin').onchange=e=>{const f=e.target.files[0];e.target.value='';setApk(f)};
+dropZone($('ap_file'),setApk);
 $('l_url').oninput=e=>{ST.apk.linkUrl=e.target.value.trim();preview()};
 $('l_size').oninput=e=>{ST.apk.linkSize=parseFloat(e.target.value)||0;preview()};
 function paintApk(){
@@ -659,11 +719,12 @@ function resetForm(){
   $('prog').hidden=true;paintApk();
 }
 $('cancel').onclick=resetForm;
+addEventListener('beforeunload',e=>{if(busy){e.preventDefault();e.returnValue=''}});
 function validate(){
   const t=ptxt();
   if(!t.name)return 'Escribe el nombre del juego.';
-  if(!ST.icon.blob&&!okUrl(ST.icon.url))return 'Falta el icono del juego.';
-  if(!ST.bg.blob&&!okUrl(ST.bg.url))return 'Falta el fondo del juego.';
+  if(!ST.icon.blob&&!okImgUrl(ST.icon.url))return 'Falta el icono del juego.';
+  if(!ST.bg.blob&&!okImgUrl(ST.bg.url))return 'Falta el fondo del juego.';
   if(!t.desc)return 'Escribe la descripción del juego.';
   const d=dl();
   if(!d.ok){
@@ -673,33 +734,40 @@ function validate(){
   }
   return '';
 }
-function prog(text,p){$('prog').hidden=false;$('ptxt').textContent=text;$('pbar').style.width=Math.round((p||0)*100)+'%'}
+function prog(text,p){$('prog').hidden=false;$('ptxt').textContent=text;$('pbar').style.width=Math.round((p||0)*100)+'%';$('pcancel').hidden=!tasks.size}
+const tasks=new Set();
+let storageDown=false;
+const okImgUrl=v=>okUrl(v)||(typeof v==='string'&&/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+\/=]+$/.test(v));
+const toDataUrl=b=>new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=()=>rej(r.error);r.readAsDataURL(b)});
 const timeout=(ms,code)=>new Promise((_,rej)=>setTimeout(()=>rej(Object.assign(new Error(code),{code})),ms));
 function upload(path,blob,meta,onp,stallMs){
   stallMs=stallMs||20000;
   const once=()=>new Promise((res,rej)=>{
     const t=storage.ref(path).put(blob,meta);
-    let last=Date.now(),lastB=-1,dead=false;
+    tasks.add(t);
+    let last=Date.now(),lastB=-1,dead=false,wd;
+    const done=()=>{clearInterval(wd);tasks.delete(t)};
     /* si no avanza ni un byte en stallMs, se corta y se avisa (antes se quedaba colgado para siempre) */
-    const wd=setInterval(()=>{
-      if(Date.now()-last>stallMs){dead=true;clearInterval(wd);try{t.cancel()}catch(e){}rej(Object.assign(new Error('stalled'),{code:'storage/stalled'}))}
+    wd=setInterval(()=>{
+      if(Date.now()-last>stallMs){dead=true;done();try{t.cancel()}catch(e){}rej(Object.assign(new Error('stalled'),{code:'storage/stalled'}))}
     },1000);
     t.on('state_changed',s=>{
       if(s.bytesTransferred!==lastB){lastB=s.bytesTransferred;last=Date.now()}
-      if(onp&&!dead)onp(s.totalBytes?s.bytesTransferred/s.totalBytes:0);
-    },e=>{clearInterval(wd);if(!dead)rej(e)},async()=>{
-      clearInterval(wd);
+      if(onp&&!dead)onp(s.totalBytes?s.bytesTransferred/s.totalBytes:0,s.bytesTransferred,s.totalBytes);
+    },e=>{done();if(!dead)rej(e)},async()=>{
+      done();
       try{res(await Promise.race([t.snapshot.ref.getDownloadURL(),timeout(15000,'storage/stalled')]))}catch(e){rej(e)}
     });
   });
   return once().catch(e=>{if(e&&e.code==='storage/stalled'){console.warn('Subida trabada, reintentando…');return once()}throw e});
 }
+$('pcancel').onclick=()=>tasks.forEach(t=>{try{t.cancel()}catch(e){}});
 const rmFile=p=>p?storage.ref(p).delete().catch(()=>{}):0;
 function saveError(e){
   const c=(e&&e.code)||'';
   if(c==='PERMISSION_DENIED'||c==='storage/unauthorized')return 'No tienes permiso para publicar. Contacta a Gio Store.';
   if(/storage\/(unknown|bucket-not-found|project-not-found|quota-exceeded)/.test(c))return 'El almacenamiento de archivos aún no está activado. Usa un enlace en vez de subir, o avisa a Gio Store.';
-  if(c==='storage/stalled')return 'La subida se quedó trabada y no avanzó. Revisa tu internet y que Firebase Storage esté activado con reglas que permitan games/{uid}/. Mientras tanto puedes usar «Usar un enlace en vez de subir».';
+  if(c==='storage/stalled')return 'Firebase Storage no responde (desde febrero de 2026 exige el plan Blaze). Para el APK usa «Pegar enlace» con el enlace de descarga y su peso en MB.';
   if(c==='storage/canceled')return 'Se canceló la subida.';
   if(c==='storage/retry-limit-exceeded'||c==='storage/network-request-failed')return 'Se cortó la conexión mientras subíamos. Inténtalo de nuevo.';
   return 'No pudimos publicar el juego. Revisa tu conexión e inténtalo de nuevo.';
@@ -711,24 +779,36 @@ $('gf').onsubmit=async e=>{
   if(err){say(err,'err');return}
   busy=true;$('save').disabled=true;say('');
   try{await Promise.race([(auth.currentUser||user).getIdToken(true),timeout(10000,'token')])}catch(e){console.warn('Token:',e)}
+  let wl=null;try{if(navigator.wakeLock)wl=await navigator.wakeLock.request('screen')}catch(e){}
   const t=ptxt(),old=editing||{},id=editing?editing.id:db.ref('games').push().key,base='games/'+user.uid+'/'+id+'/',fresh=[],trash=[];
   try{
     let icon=ST.icon.url,iconPath=old.iconPath||null,bg=ST.bg.url,bgPath=old.bgPath||null;
-    if(ST.icon.blob){
-      prog('Subiendo el icono…',0);const p=base+'icon-'+Date.now()+'.jpg';
-      icon=await upload(p,ST.icon.blob,{contentType:'image/jpeg',cacheControl:'public,max-age=31536000'});fresh.push(p);
-      if(old.iconPath)trash.push(old.iconPath);iconPath=p;
-    }else if(old.iconPath&&ST.icon.url!==old.icon){trash.push(old.iconPath);iconPath=null}
-    if(ST.bg.blob){
-      prog('Subiendo el fondo…',0);const p=base+'bg-'+Date.now()+'.jpg';
-      bg=await upload(p,ST.bg.blob,{contentType:'image/jpeg',cacheControl:'public,max-age=31536000'});fresh.push(p);
-      if(old.bgPath)trash.push(old.bgPath);bgPath=p;
-    }else if(old.bgPath&&ST.bg.url!==old.bg){trash.push(old.bgPath);bgPath=null}
+    const jobs=[],pr={icon:0,bg:0},nImg=(ST.icon.blob?1:0)+(ST.bg.blob?1:0);
+    const img=async(k,name)=>{
+      if(!storageDown){
+        const p=base+name+'-'+Date.now()+'.jpg';
+        try{
+          const u=await upload(p,ST[k].blob,{contentType:'image/jpeg',cacheControl:'public,max-age=31536000'},f=>{pr[k]=f;prog('Subiendo imágenes…',(pr.icon+pr.bg)/nImg)},10000);
+          fresh.push(p);return[u,p];
+        }catch(e){
+          if(e&&e.code==='storage/canceled')throw e;
+          storageDown=true;console.warn('Storage no responde, las imágenes se guardan directo en la base de datos:',e);
+        }
+      }
+      prog('Guardando imágenes…',.9);
+      const [w,h]=k==='icon'?[256,256]:[960,660];
+      return[await toDataUrl(await fitImage(ST[k].blob,w,h,.74)),null];
+    };
+    if(ST.icon.blob)jobs.push(img('icon','icon').then(([u,p])=>{icon=u;if(old.iconPath)trash.push(old.iconPath);iconPath=p}));
+    else if(old.iconPath&&ST.icon.url!==old.icon){trash.push(old.iconPath);iconPath=null}
+    if(ST.bg.blob)jobs.push(img('bg','bg').then(([u,p])=>{bg=u;if(old.bgPath)trash.push(old.bgPath);bgPath=p}));
+    else if(old.bgPath&&ST.bg.url!==old.bg){trash.push(old.bgPath);bgPath=null}
+    if(jobs.length){prog('Subiendo imágenes…',0);const bad=(await Promise.allSettled(jobs)).find(r=>r.status==='rejected');if(bad)throw bad.reason}
     const d=dl();let url=d.url,apkPath=old.apkPath||null;
     if(ST.apk.mode==='file'&&ST.apk.file){
       const slug=(t.name.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9]+/g,'-').replace(/^-|-$/g,'')||'juego').slice(0,40);
       const p=base+'game-'+Date.now()+'.apk';
-      url=await upload(p,ST.apk.file,{contentType:'application/vnd.android.package-archive',contentDisposition:'attachment; filename="'+slug+'.apk"'},pc=>prog('Subiendo tu APK… '+Math.round(pc*100)+'%',pc),60000);
+      url=await upload(p,ST.apk.file,{contentType:'application/vnd.android.package-archive',contentDisposition:'attachment; filename="'+slug+'.apk"'},(pc,tr,tot)=>prog('Subiendo tu APK… '+Math.round(pc*100)+'% · '+fmtMB(tr/1048576)+' de '+fmtMB(tot/1048576),pc),60000);
       fresh.push(p);if(old.apkPath)trash.push(old.apkPath);apkPath=p;
     }else if(ST.apk.mode==='link'){if(old.apkPath)trash.push(old.apkPath);apkPath=null}
     prog('Publicando en la tienda…',1);
@@ -741,6 +821,7 @@ $('gf').onsubmit=async e=>{
   }catch(er){
     console.error(er);fresh.forEach(rmFile);$('prog').hidden=true;say(saveError(er),'err');
   }
+  try{wl&&wl.release()}catch(e){}
   busy=false;$('save').disabled=false;
 };
 
@@ -759,7 +840,7 @@ function renderList(){
   if(!games.length){L.append(el('div','empty','Todavía no publicaste ningún juego. Completa el formulario para publicar el primero.'));return}
   games.forEach(g=>{
     const it=el('div','item');
-    if(okUrl(g.icon)){const i=el('img');i.alt='';i.loading='lazy';i.src=g.icon;i.onerror=()=>i.replaceWith(el('div','ph'));it.append(i)}else it.append(el('div','ph'));
+    if(okImgUrl(g.icon)){const i=el('img');i.alt='';i.loading='lazy';i.src=g.icon;i.onerror=()=>i.replaceWith(el('div','ph'));it.append(i)}else it.append(el('div','ph'));
     const t=el('div');t.append(el('strong','',g.name||''),el('span','',(g.pub||'GioStore')+(g.sizeMB?' · '+fmtMB(g.sizeMB):'')));it.append(t);
     const acts=el('div','acts');
     const ed=el('button','btn ghost sm','Editar');ed.type='button';ed.onclick=()=>editGame(g);
