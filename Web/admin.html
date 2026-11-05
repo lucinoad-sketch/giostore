@@ -140,8 +140,20 @@ auth.onAuthStateChanged(u=>{
     auth.signOut().then(()=>{say('lmsg','Esta cuenta no es de administrador.','err')});return;
   }
   $('who').textContent=u.email;
-  show('app');loadSols();loadDevs();
+  show('app');loadSols();loadDevs();ensureSelf(u);
 });
+
+/* ---------- El administrador también queda registrado como desarrollador ---------- */
+async function ensureSelf(u){
+  try{
+    const [perm,inf]=await Promise.all([rdb.ref('developers/'+u.uid).once('value'),rdb.ref('developers_info/'+u.uid).once('value')]);
+    let changed=false;
+    if(perm.val()!==true){await rdb.ref('developers/'+u.uid).set(true);changed=true}
+    if(!inf.exists()){await rdb.ref('developers_info/'+u.uid).set({email:u.email,creadoEn:TS});changed=true}
+    $('who').textContent=u.email+' · con permiso de desarrollador';
+    if(changed)loadDevs();
+  }catch(er){console.warn('No se pudo registrar al administrador como desarrollador:',er);$('who').textContent=u.email+' · sin permiso de desarrollador ('+(er.code||'error')+')'}
+}
 
 /* ---------- Agregar desarrollador ---------- */
 const CH='abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789';

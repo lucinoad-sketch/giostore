@@ -333,6 +333,7 @@ section:not([hidden]),#app main>*,#app .wrap>*,.sec{animation-duration:.4s}
       </div>
       <p class="msg" id="lmsg" role="alert"></p>
       <button class="btn" id="lbtn" type="submit">Entrar al panel <i class="fa-solid fa-arrow-right"></i></button>
+      <button class="btn ghost" id="gbtn" type="button" style="margin-top:10px"><i class="fa-brands fa-google" style="margin:0 8px 0 0"></i>Entrar con Google</button>
       <p class="hint" style="opacity:.55;margin-top:10px;font-size:.78rem">Versión 3.2</p>
       <p class="hint">¿Aún no tienes acceso? <a id="reqlink" href="#">Solicítalo a Gio Store</a></p>
     </form>
@@ -529,7 +530,7 @@ $('reqlink').href=CFG.requestUrl;
 const toEmail=v=>{v=v.trim().toLowerCase();return v.includes('@')?v:v+'@'+CFG.userDomain};
 function authError(c){
   if(/invalid-credential|wrong-password|user-not-found|invalid-login/.test(c))return 'Usuario o contraseña incorrectos.';
-  return({'auth/too-many-requests':'Demasiados intentos. Espera unos minutos e inténtalo de nuevo.','auth/user-disabled':'Esta cuenta está desactivada. Contacta a Gio Store.','auth/network-request-failed':'Sin conexión. Revisa tu internet e inténtalo de nuevo.','auth/invalid-email':'Escribe un usuario válido.'})[c]||'No pudimos iniciar sesión. Inténtalo de nuevo.';
+  return({'auth/too-many-requests':'Demasiados intentos. Espera unos minutos e inténtalo de nuevo.','auth/user-disabled':'Esta cuenta está desactivada. Contacta a Gio Store.','auth/network-request-failed':'Sin conexión. Revisa tu internet e inténtalo de nuevo.','auth/invalid-email':'Escribe un usuario válido.','auth/popup-closed-by-user':'Cerraste la ventana de Google.','auth/popup-blocked':'El navegador bloqueó la ventana de Google. Permite ventanas emergentes e inténtalo otra vez.','auth/operation-not-allowed':'Google no está activado en Firebase (Authentication → Sign-in method).','auth/unauthorized-domain':'Este dominio no está autorizado en Firebase (Authentication → Settings → Authorized domains).'})[c]||'No pudimos iniciar sesión. Inténtalo de nuevo.';
 }
 $('eye').onclick=()=>{const p=$('p'),s=p.type==='password';p.type=s?'text':'password';$('eye').textContent=s?'Ocultar':'Mostrar'};
 $('lf').onsubmit=async e=>{
@@ -540,6 +541,16 @@ $('lf').onsubmit=async e=>{
   try{const cr=await auth.signInWithEmailAndPassword(toEmail(u),p);$('p').value='';if(entered!==cr.user.uid)enter(cr.user)}
   catch(err){m.textContent=authError(err.code||'');m.className='msg err'}
   $('lbtn').disabled=false;
+};
+$('gbtn').onclick=async()=>{
+  const m=$('lmsg');m.textContent='';$('gbtn').disabled=true;
+  const prov=new firebase.auth.GoogleAuthProvider();
+  try{await auth.signInWithPopup(prov)}
+  catch(err){
+    if(err.code==='auth/popup-blocked'||err.code==='auth/operation-not-supported-in-this-environment'){try{await auth.signInWithRedirect(prov);return}catch(e2){err=e2}}
+    m.textContent=authError(err.code||'');m.className='msg err';
+  }
+  $('gbtn').disabled=false;
 };
 let manual=false;
 $('out').onclick=$('dout').onclick=()=>{manual=true;auth.signOut()};
@@ -765,7 +776,8 @@ $('pcancel').onclick=()=>tasks.forEach(t=>{try{t.cancel()}catch(e){}});
 const rmFile=p=>p?storage.ref(p).delete().catch(()=>{}):0;
 function saveError(e){
   const c=(e&&e.code)||'';
-  if(c==='PERMISSION_DENIED'||c==='storage/unauthorized')return 'No tienes permiso para publicar. Contacta a Gio Store.';
+  if(c==='PERMISSION_DENIED')return 'La base de datos no dejó guardar el juego. Revisa que tu cuenta tenga permiso de desarrollador y que las reglas de «games» acepten el icono y el fondo.';
+  if(c==='storage/unauthorized')return 'Firebase Storage rechazó la subida. Revisa las reglas de Storage.';
   if(/storage\/(unknown|bucket-not-found|project-not-found|quota-exceeded)/.test(c))return 'El almacenamiento de archivos aún no está activado. Usa un enlace en vez de subir, o avisa a Gio Store.';
   if(c==='storage/stalled')return 'Firebase Storage no responde (desde febrero de 2026 exige el plan Blaze). Para el APK usa «Pegar enlace» con el enlace de descarga y su peso en MB.';
   if(c==='storage/canceled')return 'Se canceló la subida.';
