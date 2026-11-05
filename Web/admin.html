@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#07040f">
+<title>Gio Store · Administración</title>
+<link href="https://fonts.googleapis.com/css2?family=Albert+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#07040f;--panel:#130c26;--panel2:#1b1236;--line:rgba(190,150,255,.18);--tx:#f4efff;--mu:#a99cc9;--ok:#4ade80;--er:#ff6b8a;--grad:linear-gradient(135deg,#ff3fa4,#8b5cff 55%,#5b8cff)}
+[hidden]{display:none!important}
+*{box-sizing:border-box;margin:0}
+body{font-family:'Albert Sans',system-ui,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;
+  background-image:radial-gradient(60% 45% at 85% -8%,rgba(139,92,255,.26),transparent),radial-gradient(40% 40% at 0 100%,rgba(255,63,164,.13),transparent);background-attachment:fixed}
+main{max-width:760px;margin:0 auto;padding:32px 18px 60px}
+h1{font-size:26px;font-weight:800}h2{font-size:18px;font-weight:700;margin-bottom:6px}
+.sub{color:var(--mu);font-size:14px;margin-bottom:16px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:22px;margin-bottom:18px}
+.center{min-height:80vh;display:grid;place-items:center}.center .card{width:100%;max-width:420px}
+label{display:block;font-size:13px;font-weight:600;color:var(--mu);margin:12px 0 6px}
+input{width:100%;height:46px;border-radius:12px;border:1px solid var(--line);background:var(--panel2);color:var(--tx);padding:0 14px;font:inherit;font-size:15px;outline:none}
+input:focus{border-color:#8b5cff}
+.row{display:flex;gap:8px}.row input{flex:1;min-width:0}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:44px;padding:0 18px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--tx);font:inherit;font-weight:700;font-size:14px;cursor:pointer;white-space:nowrap}
+.btn:disabled{opacity:.5;cursor:default}
+.btn.p{background:var(--grad);border-color:transparent}
+.btn.s{height:36px;padding:0 14px;font-size:13px}
+.btn.w{width:100%;margin-top:16px}
+.msg{font-size:14px;margin-top:12px;min-height:18px}.msg.err{color:var(--er)}.msg.ok{color:var(--ok)}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:22px;flex-wrap:wrap}
+.top small{color:var(--mu);display:block;font-size:13px}
+.res{margin-top:14px;padding:14px;border-radius:12px;background:var(--panel2);border:1px solid var(--line);font-size:14px;line-height:1.7;word-break:break-all}
+.res b{color:#fff}
+.item{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:14px 0;border-top:1px solid var(--line)}
+.item:first-child{border-top:0}
+.item .i{min-width:0}.item .i b{display:block;font-size:15px}.item .i span{display:block;color:var(--mu);font-size:13px;margin-top:2px;word-break:break-word}
+.item .a{display:flex;gap:6px;flex-shrink:0;flex-wrap:wrap;justify-content:flex-end}
+.tag{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px;margin-left:6px;vertical-align:middle}
+.tag.on{background:rgba(74,222,128,.15);color:var(--ok)}.tag.off{background:rgba(255,107,138,.15);color:var(--er)}
+.empty{color:var(--mu);font-size:14px;padding:6px 0}
+.warn{background:rgba(255,200,80,.1);border:1px solid rgba(255,200,80,.35);color:#ffd88a;border-radius:12px;padding:12px 14px;font-size:14px;margin-bottom:18px}
+hr{border:0;border-top:1px solid var(--line);margin:18px 0}
+a{color:#b9a2ff}
+</style>
+</head>
+<body>
+<main>
+
+<section class="center" id="login">
+  <div class="card">
+    <h1>Administración</h1>
+    <p class="sub">Entra con tu cuenta de administrador de Gio Store.</p>
+    <form id="lf">
+      <label for="le">Correo</label><input id="le" type="email" autocomplete="username" placeholder="tu@correo.com">
+      <label for="lp">Contraseña</label><input id="lp" type="password" autocomplete="current-password">
+      <button class="btn p w" id="lbtn" type="submit">Entrar</button>
+    </form>
+    <button class="btn w" id="gbtn" type="button">Entrar con Google</button>
+    <p class="msg" id="lmsg"></p>
+  </div>
+</section>
+
+<section id="app" hidden>
+  <div class="top">
+    <div><h1>Administración</h1><small id="who"></small></div>
+    <button class="btn s" id="out">Salir</button>
+  </div>
+  <div class="warn" id="verify" hidden>Tu correo no está verificado, y las reglas de la base de datos lo exigen para guardar. Entra con Google o <a href="#" id="sendv">envía el correo de verificación</a>.</div>
+
+  <div class="card">
+    <h2>Agregar desarrollador</h2>
+    <p class="sub">Crea su cuenta y le da permiso para publicar juegos, todo en un paso.</p>
+    <form id="df">
+      <label for="u">Usuario o correo</label>
+      <input id="u" placeholder="juan  (o un correo completo)" autocomplete="off" autocapitalize="off">
+      <label for="p">Contraseña (mínimo 6 caracteres)</label>
+      <div class="row"><input id="p" type="text" autocomplete="off" placeholder="Escribe una o genera una"><button class="btn" type="button" id="gen">Generar</button></div>
+      <button class="btn p w" id="dbtn" type="submit">Agregar como desarrollador</button>
+    </form>
+    <p class="msg" id="dmsg"></p>
+    <div class="res" id="res" hidden></div>
+  </div>
+
+  <div class="card">
+    <h2>Solicitudes pendientes</h2>
+    <p class="sub">Las que llegan desde la página «Ser desarrollador».</p>
+    <div id="sols"><p class="empty">Cargando…</p></div>
+  </div>
+
+  <div class="card">
+    <h2>Desarrolladores</h2>
+    <p class="sub">Con permiso pueden publicar. Quitar el permiso no borra sus juegos ya publicados.</p>
+    <div id="devs"><p class="empty">Cargando…</p></div>
+  </div>
+</section>
+
+</main>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+const CFG={apiKey:"AIzaSyBMIyvUy5MSnF9rcuzUz0-mNmONyiBvI8w",authDomain:"giostream11.firebaseapp.com",databaseURL:"https://giostream11-default-rtdb.firebaseio.com",projectId:"giostream11",storageBucket:"giostream11.firebasestorage.app",messagingSenderId:"907303340383",appId:"1:907303340383:web:3f5545b847dcbfccf60eea"};
+const ADMIN_EMAIL='giohanguelmo52@gmail.com',DOMAIN='devs.giostore.app';
+
+firebase.initializeApp(CFG);
+const auth=firebase.auth(),rdb=firebase.database(),fs=firebase.firestore(),TS=firebase.database.ServerValue.TIMESTAMP;
+/* Segunda instancia: crear la cuenta del desarrollador sin cerrar TU sesión */
+let sec=null;const secAuth=()=>{if(!sec)sec=firebase.initializeApp(CFG,'sec');return sec.auth()};
+
+const $=id=>document.getElementById(id);
+const el=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e};
+const toEmail=v=>{v=v.trim().toLowerCase();return v.includes('@')?v:v+'@'+DOMAIN};
+const userOf=e=>(e||'').replace('@'+DOMAIN,'');
+const say=(id,t,type)=>{const m=$(id);m.textContent=t||'';m.className='msg'+(type?' '+type:'')};
+const show=v=>{$('login').hidden=v!=='login';$('app').hidden=v!=='app'};
+let curSol=null;
+
+/* ---------- Sesión ---------- */
+function authErr(c){
+  if(/invalid-credential|wrong-password|user-not-found|invalid-login/.test(c))return 'Correo o contraseña incorrectos.';
+  return({'auth/too-many-requests':'Demasiados intentos. Espera unos minutos.','auth/network-request-failed':'Sin conexión.','auth/invalid-email':'Escribe un correo válido.','auth/popup-closed-by-user':'Cerraste la ventana de Google.','auth/weak-password':'La contraseña debe tener al menos 6 caracteres.','auth/operation-not-allowed':'Ese método de acceso no está activado en Firebase (Authentication → Sign-in method).','auth/unauthorized-domain':'Este dominio no está autorizado en Firebase (Authentication → Settings → Authorized domains).'})[c]||'No se pudo completar. ('+(c||'error')+')';
+}
+$('lf').onsubmit=async e=>{
+  e.preventDefault();const em=$('le').value.trim(),pw=$('lp').value;
+  if(!em||!pw){say('lmsg','Escribe tu correo y tu contraseña.','err');return}
+  $('lbtn').disabled=true;say('lmsg','');
+  try{await auth.signInWithEmailAndPassword(em,pw);$('lp').value=''}catch(er){say('lmsg',authErr(er.code),'err')}
+  $('lbtn').disabled=false;
+};
+$('gbtn').onclick=async()=>{say('lmsg','');try{await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())}catch(er){say('lmsg',authErr(er.code),'err')}};
+$('out').onclick=()=>auth.signOut();
+$('sendv').onclick=async e=>{e.preventDefault();try{await auth.currentUser.sendEmailVerification();alert('Te enviamos el correo de verificación. Ábrelo y vuelve a entrar.')}catch(er){alert(authErr(er.code))}};
+
+auth.onAuthStateChanged(u=>{
+  if(!u){show('login');return}
+  if((u.email||'').toLowerCase()!==ADMIN_EMAIL){
+    auth.signOut().then(()=>{say('lmsg','Esta cuenta no es de administrador.','err')});return;
+  }
+  $('who').textContent=u.email;
+  show('app');loadSols();loadDevs();
+});
+
+/* ---------- Agregar desarrollador ---------- */
+const CH='abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+function rndPass(n=10){const a=new Uint32Array(n);crypto.getRandomValues(a);return[...a].map(x=>CH[x%CH.length]).join('')}
+$('gen').onclick=()=>{$('p').value=rndPass()};
+const slug=s=>(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'').slice(0,20);
+
+async function uidFor(email,pass){
+  const sa=secAuth();let uid;
+  try{uid=(await sa.createUserWithEmailAndPassword(email,pass)).user.uid}
+  catch(e){
+    if(e.code==='auth/email-already-in-use'){
+      try{uid=(await sa.signInWithEmailAndPassword(email,pass)).user.uid}
+      catch(_){throw new Error('Ese usuario ya existe. Escribe su contraseña actual para darle permiso, o usa otro usuario.')}
+    }else throw e;
+  }
+  await sa.signOut();return uid;
+}
+$('df').onsubmit=async e=>{
+  e.preventDefault();
+  const raw=$('u').value.trim(),pass=$('p').value;
+  if(!raw){say('dmsg','Escribe el usuario o el correo.','err');return}
+  const email=toEmail(raw);
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){say('dmsg','Ese usuario no es válido. Usa letras y números, sin espacios.','err');return}
+  if(pass.length<6){say('dmsg','La contraseña debe tener al menos 6 caracteres.','err');return}
+  $('dbtn').disabled=true;say('dmsg','Creando…');$('res').hidden=true;
+  try{
+    const uid=await uidFor(email,pass);
+    await rdb.ref('developers/'+uid).set(true);
+    await rdb.ref('developers_info/'+uid).set({email,creadoEn:TS});
+    if(curSol){try{await fs.collection('solicitudes_desarrollador').doc(curSol).update({estado:'aceptada'})}catch(_){}curSol=null}
+    const usr=userOf(email),link=location.origin+'/developerpublish.html';
+    const r=$('res');r.replaceChildren(
+      el('div','','Listo. Mándale estos datos:'),
+      (()=>{const d=el('div');d.append('Panel: ',el('b','',link));return d})(),
+      (()=>{const d=el('div');d.append('Usuario: ',el('b','',usr));return d})(),
+      (()=>{const d=el('div');d.append('Contraseña: ',el('b','',pass));return d})()
+    );
+    const cp=el('button','btn s','Copiar datos');cp.type='button';cp.style.marginTop='10px';
+    cp.onclick=async()=>{try{await navigator.clipboard.writeText('Panel: '+link+'\nUsuario: '+usr+'\nContraseña: '+pass);cp.textContent='Copiado'}catch(_){}};
+    r.append(cp);r.hidden=false;say('dmsg','Desarrollador agregado.','ok');
+    $('u').value='';$('p').value='';loadSols();loadDevs();
+  }catch(er){say('dmsg',er.message&&!er.code?er.message:(er.code==='PERMISSION_DENIED'||/permission/i.test(er.message||'')?'Sin permiso en la base de datos. Revisa que publicaste las reglas nuevas y que tu correo esté verificado.':authErr(er.code)),'err')}
+  $('dbtn').disabled=false;
+};
+
+/* ---------- Solicitudes ---------- */
+async function loadSols(){
+  const box=$('sols');
+  try{
+    const s=await fs.collection('solicitudes_desarrollador').where('estado','==','pendiente').get();
+    box.replaceChildren();
+    if(s.empty){box.append(el('p','empty','No hay solicitudes pendientes.'));return}
+    s.docs.forEach(d=>{
+      const v=d.data(),it=el('div','item'),i=el('div','i');
+      i.append(el('b','',v.nombre||'Sin nombre'),el('span','',(v.correo||'')+(v.pais?' · '+v.pais:'')+(v.telefono?' · '+v.telefono:'')));
+      if(/^https?:\/\//.test(v.portafolio||'')){const sp=el('span'),a=el('a','',v.portafolio);a.href=v.portafolio;a.target='_blank';a.rel='noopener';sp.append(a);i.append(sp)}
+      if(v.descripcion)i.append(el('span','',String(v.descripcion).slice(0,180)+(v.descripcion.length>180?'…':'')));
+      const a=el('div','a'),ok=el('button','btn p s','Aceptar'),no=el('button','btn s','Rechazar');
+      ok.onclick=()=>{curSol=d.id;$('u').value=slug(v.nombre)||('dev'+rndPass(4).toLowerCase());$('p').value=rndPass();say('dmsg','Revisa el usuario y la contraseña, y toca «Agregar como desarrollador». Su correo de contacto: '+(v.correo||'—'));$('df').scrollIntoView({behavior:'smooth',block:'center'})};
+      no.onclick=async()=>{if(!confirm('¿Rechazar la solicitud de '+(v.nombre||'este usuario')+'?'))return;try{await fs.collection('solicitudes_desarrollador').doc(d.id).update({estado:'rechazada'});loadSols()}catch(er){alert('No se pudo: '+(er.code||er.message))}};
+      a.append(ok,no);it.append(i,a);box.append(it);
+    });
+  }catch(er){box.replaceChildren(el('p','empty','No se pudieron cargar las solicitudes ('+(er.code||'error')+').'))}
+}
+
+/* ---------- Desarrolladores ---------- */
+async function loadDevs(){
+  const box=$('devs');
+  try{
+    const [inf,perm]=await Promise.all([rdb.ref('developers_info').once('value'),rdb.ref('developers').once('value')]);
+    const info=inf.val()||{},p=perm.val()||{},uids=[...new Set([...Object.keys(info),...Object.keys(p)])];
+    box.replaceChildren();
+    if(!uids.length){box.append(el('p','empty','Todavía no hay desarrolladores.'));return}
+    uids.sort((a,b)=>((info[b]&&info[b].creadoEn)||0)-((info[a]&&info[a].creadoEn)||0)).forEach(uid=>{
+      const on=p[uid]===true,it=el('div','item'),i=el('div','i'),b=el('b','',(info[uid]&&info[uid].email)?userOf(info[uid].email):'(sin datos)');
+      b.append(el('span','tag '+(on?'on':'off'),on?'Con permiso':'Sin permiso'));
+      i.append(b,el('span','',uid));
+      const a=el('div','a'),t=el('button','btn s',on?'Quitar permiso':'Dar permiso');
+      t.onclick=async()=>{t.disabled=true;try{await rdb.ref('developers/'+uid).set(!on);loadDevs()}catch(er){alert('No se pudo: '+(er.code||er.message));t.disabled=false}};
+      a.append(t);it.append(i,a);box.append(it);
+    });
+  }catch(er){box.replaceChildren(el('p','empty','No se pudo cargar la lista ('+(er.code||er.message||'error')+'). ¿Publicaste las reglas nuevas?'))}
+}
+</script>
+</body>
+</html>

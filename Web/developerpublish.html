@@ -2,13 +2,14 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Gio Developer - Publica tus juegos en GioStore</title>
 <meta name="theme-color" content="#07040f">
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Albert+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
 :root{--bg:#07040f;--panel:#120b22;--panel2:#1a1030;--field:#0d0818;--line:rgba(255,255,255,.11);--tx:#f4f0fc;--mu:#a99ec6;--pink:#ff3fa4;--vio:#8b5cff;--blu:#5b8cff;--err:#ff7b95;--ok:#4ade80;--grad:linear-gradient(135deg,#ff3fa4,#8b5cff 55%,#5b8cff)}
 *{box-sizing:border-box;margin:0}
@@ -151,23 +152,138 @@ details p{margin-top:10px}
   .card{padding:22px}
 }
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* ===== Mejoras visuales y animaciones ===== */
+body::before,body::after{content:"";position:fixed;z-index:-1;border-radius:50%;filter:blur(70px);opacity:.5;pointer-events:none;animation:blob 14s ease-in-out infinite alternate}
+body::before{width:380px;height:380px;background:#8b5cff55;top:-120px;left:-100px}
+body::after{width:340px;height:340px;background:#ff3fa44d;bottom:-120px;right:-80px;animation-delay:-6s}
+@keyframes blob{to{transform:translate(60px,40px) scale(1.15)}}
+@keyframes up{from{opacity:0;transform:translateY(26px) scale(.98)}to{opacity:1;transform:none}}
+@keyframes pop{0%{opacity:0;transform:scale(.8)}60%{transform:scale(1.04)}100%{opacity:1;transform:scale(1)}}
+@keyframes shine{to{background-position:200% center}}
+@keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+section:not([hidden]){animation:up .6s cubic-bezier(.2,.8,.2,1) both}
+#boot{flex-direction:column;gap:18px}
+#boot .brand{font-size:1.6rem;animation:floaty 2.4s ease-in-out infinite}
+.spin{width:30px;height:30px;border-radius:50%;border:3px solid rgba(255,255,255,.12);border-top-color:var(--vio);animation:spin .8s linear infinite;display:block;margin:0 auto}
+.brand{background:linear-gradient(90deg,#ff3fa4,#8b5cff,#5b8cff,#ff3fa4);background-size:200% auto;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:shine 5s linear infinite}
+.intro h1{background:linear-gradient(120deg,#fff 30%,#c9b8ff);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.intro>*{animation:up .7s cubic-bezier(.2,.8,.2,1) both}
+.intro>*:nth-child(2){animation-delay:.12s}.intro>*:nth-child(3){animation-delay:.24s}
+.login .card{animation:pop .7s .15s cubic-bezier(.2,.8,.2,1) both;box-shadow:0 20px 60px rgba(139,92,255,.22)}
+.card{background:linear-gradient(180deg,rgba(26,16,48,.9),rgba(18,11,34,.92));backdrop-filter:blur(8px);transition:transform .3s,box-shadow .3s,border-color .3s}
+.card:hover{border-color:rgba(190,150,255,.3)}
+.btn{position:relative;overflow:hidden;box-shadow:0 8px 24px rgba(139,92,255,.35);transition:filter .2s,transform .2s,box-shadow .2s}
+.btn:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(255,63,164,.4)}
+.btn:active{transform:scale(.97)}
+.btn::after{content:"";position:absolute;inset:0;background:linear-gradient(100deg,transparent 35%,rgba(255,255,255,.35) 50%,transparent 65%);transform:translateX(-120%)}
+.btn:not(.ghost):not(.danger):hover::after{transform:translateX(120%);transition:transform .7s}
+.btn.ghost,.btn.danger{box-shadow:none}
+.btn.ghost:hover{background:rgba(255,255,255,.06)}
+input,select,textarea{transition:border-color .2s,box-shadow .2s,transform .2s}
+input:focus,select:focus,textarea:focus{transform:translateY(-1px)}
+.top{backdrop-filter:blur(12px);animation:up .5s both}
+#app main>*,#app .wrap>*{animation:up .6s cubic-bezier(.2,.8,.2,1) both}
+#app main>*:nth-child(2),#app .wrap>*:nth-child(2){animation-delay:.1s}
+#app main>*:nth-child(3),#app .wrap>*:nth-child(3){animation-delay:.2s}
+.sec{animation:up .6s both}
+.item,.game,.mine>*{animation:pop .5s cubic-bezier(.2,.8,.2,1) both}
+.item:nth-child(2){animation-delay:.07s}.item:nth-child(3){animation-delay:.14s}.item:nth-child(4){animation-delay:.21s}
+.item{transition:transform .25s,border-color .25s}.item:hover{transform:translateY(-3px)}
+.msg.ok,.msg.err{animation:pop .4s both}
+
+/* ===== Diseño pulido ===== */
+:root{--r:18px}
+.card{border-radius:22px;border:1px solid transparent;background:linear-gradient(180deg,#1a1030,#120b22) padding-box,linear-gradient(140deg,rgba(255,63,164,.45),rgba(139,92,255,.25) 45%,rgba(91,140,255,.4)) border-box;box-shadow:0 18px 50px -20px rgba(0,0,0,.7)}
+input,select,textarea{border-radius:14px;background:#0b0716}
+input::placeholder,textarea::placeholder{color:#6a5f8c}
+.btn{border-radius:14px;letter-spacing:.01em}
+.btn:not(.ghost):not(.danger){background:linear-gradient(120deg,#ff3fa4,#8b5cff 60%,#5b8cff)}
+.sec{border-top:1px dashed rgba(190,150,255,.2)}
+.sec h3{display:flex;align-items:center}
+.drop{border-radius:16px;transition:border-color .25s,background .25s,transform .25s,box-shadow .25s}
+.drop:hover{transform:translateY(-2px);box-shadow:0 10px 30px -12px rgba(139,92,255,.6);background:#120b24}
+.seg{border-radius:14px}
+.seg button{transition:background .25s,color .25s}
+.prog .bar i{box-shadow:0 0 14px rgba(255,63,164,.7)}
+.phone{animation:floaty 5s ease-in-out infinite}
+.item{border-radius:18px;transition:transform .25s,border-color .25s,box-shadow .25s}
+.item:hover{border-color:rgba(190,150,255,.35);box-shadow:0 14px 34px -18px rgba(139,92,255,.6)}
+.head h1{background:linear-gradient(120deg,#fff 35%,#c9b8ff);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.top{background:rgba(10,6,20,.78)}
+.top-in{padding-top:max(14px,env(safe-area-inset-top))}
+dialog{border-radius:22px;animation:pop .35s both}
+.center{min-height:100vh;min-height:100dvh}
+
+/* ===== Celular ===== */
+@media(max-width:700px){
+  html{-webkit-text-size-adjust:100%}
+  input,select,textarea{font-size:16px;padding:14px}
+  .btn{min-height:50px;font-size:1rem}
+  .btn.sm{min-height:42px;padding:10px 16px}
+  .center{padding:24px 16px calc(24px + env(safe-area-inset-bottom));align-items:start;padding-top:max(36px,env(safe-area-inset-top))}
+  .login-in{gap:22px}
+  .intro .brand{margin-bottom:16px}
+  .intro h1{font-size:2rem}
+  .lead{font-size:1rem}
+  .card{padding:20px 18px;border-radius:20px}
+  .top-in{padding:10px 14px;gap:10px}
+  .who{gap:8px}
+  .who span{display:none}
+  .wrap{padding:22px 14px calc(60px + env(safe-area-inset-bottom))}
+  .head{margin-bottom:20px}
+  .head h1{font-size:1.9rem}
+  .cols{gap:22px}
+  .prev{order:-1}
+  .phone{max-width:260px;margin:0 auto}
+  .tilew{justify-content:center}
+  .drop.icon{width:130px}
+  .drop.bg{max-width:100%}
+  .seg{display:flex;width:100%}
+  .seg button{flex:1;padding:11px 8px}
+  .file{flex-direction:column;align-items:stretch}
+  .file .btn{width:100%}
+  .help{flex-direction:column;align-items:stretch}
+  .help .btn{width:100%}
+  .item{grid-template-columns:56px 1fr;padding:12px}
+  .item .acts{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%}
+  .item .acts .btn{width:100%}
+  .mt{margin:36px 0 14px}
+  .uid{flex-direction:column}
+  .uid .btn{width:100%}
+  #gf>.row,.row .btn{flex:1 1 100%}
+  #save{position:sticky;bottom:calc(10px + env(safe-area-inset-bottom));z-index:4;box-shadow:0 12px 34px rgba(139,92,255,.55)}
+  dialog{position:fixed;inset:auto 0 0 0;margin:0;width:100%;max-height:88dvh;border-radius:24px 24px 0 0;padding:22px 18px calc(22px + env(safe-area-inset-bottom));animation:sheet .35s cubic-bezier(.2,.8,.2,1) both}
+  .contact .btn{flex:1 1 100%}
+}
+@keyframes sheet{from{transform:translateY(100%)}to{transform:none}}
+@media(hover:none){.btn:hover,.item:hover,.drop:hover{transform:none}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+
+/* Iconos */
+.brand i,.intro h1 i{-webkit-text-fill-color:var(--vio);color:var(--vio);margin-right:6px}
+.lab i,h2 i,h3 i{color:var(--vio);margin-right:9px;width:1.15em;text-align:center;-webkit-text-fill-color:var(--vio)}
+.btn i{margin-left:6px;transition:transform .2s}.btn:hover i{transform:translateX(3px)}
+#ft::before{font-family:'Font Awesome 6 Free';font-weight:900;content:'\f135';margin-right:10px;color:var(--vio)}
+.top-in .brand i{font-size:1.05em}
 </style>
 </head>
 <body>
 
 <!-- Comprobando sesión -->
-<section class="center" id="boot"><p class="brand">Gio Developer</p></section>
+<section class="center" id="boot"><p class="brand"><i class="fa-solid fa-gamepad"></i> Gio Developer</p><span class="spin"></span></section>
 
 <!-- Inicio de sesión -->
 <section class="center login" id="login" hidden>
   <div class="login-in">
     <div class="intro">
-      <p class="brand">Gio Developer</p>
+      <p class="brand"><i class="fa-solid fa-gamepad"></i> Gio Developer</p>
       <h1>Publica tu juego en GioStore</h1>
       <p class="lead">Entra con el usuario y la contraseña que te entregamos, completa los datos de tu juego y aparecerá en la app al instante.</p>
     </div>
     <form class="card" id="lf" novalidate>
-      <h2>Iniciar sesión</h2>
+      <h2><i class="fa-solid fa-right-to-bracket"></i>Iniciar sesión</h2>
       <p class="sub">Solo para desarrolladores aprobados.</p>
       <div class="fld"><label class="lab" for="u">Usuario</label>
         <input id="u" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="tu usuario">
@@ -179,7 +295,7 @@ details p{margin-top:10px}
         </div>
       </div>
       <p class="msg" id="lmsg" role="alert"></p>
-      <button class="btn" id="lbtn" type="submit">Entrar al panel</button>
+      <button class="btn" id="lbtn" type="submit">Entrar al panel <i class="fa-solid fa-arrow-right"></i></button>
       <p class="hint">¿Aún no tienes acceso? <a id="reqlink" href="#">Solicítalo a Gio Store</a></p>
     </form>
   </div>
@@ -188,9 +304,10 @@ details p{margin-top:10px}
 <!-- Cuenta sin permiso de desarrollador -->
 <section class="center" id="denied" hidden>
   <div class="card denied-in">
-    <h2>Tu cuenta aún no está aprobada</h2>
+    <h2><i class="fa-solid fa-hourglass-half"></i>Tu cuenta aún no está aprobada</h2>
     <p>Para publicar juegos, Gio Store tiene que aprobar tu cuenta. Envíale este código para que la active:</p>
     <div class="uid"><code id="uid"></code><button class="btn ghost sm" id="cpy" type="button">Copiar</button></div>
+    <p class="msg err" id="derr"></p>
     <button class="btn ghost" id="dout" type="button">Cerrar sesión</button>
   </div>
 </section>
@@ -199,7 +316,7 @@ details p{margin-top:10px}
 <section id="app" hidden>
   <header class="top">
     <div class="top-in">
-      <strong class="brand">Gio Developer</strong>
+      <strong class="brand"><i class="fa-solid fa-gamepad"></i> Gio Developer</strong>
       <div class="who"><span id="who"></span><button class="btn ghost sm" id="out" type="button">Cerrar sesión</button></div>
     </div>
   </header>
@@ -214,22 +331,22 @@ details p{margin-top:10px}
         <h2 id="ft">Publicar un juego</h2>
         <p class="sub">Completa todo y mira a la derecha cómo se verá en la app.</p>
 
-        <div class="fld"><label class="lab" for="g_name">Nombre del juego</label>
+        <div class="fld"><label class="lab" for="g_name"><i class="fa-solid fa-bullseye"></i> Nombre del juego</label>
           <input id="g_name" maxlength="60" placeholder="Nombre del juego">
         </div>
-        <div class="fld"><label class="lab" for="g_pub">Desarrollador o estudio</label>
+        <div class="fld"><label class="lab" for="g_pub"><i class="fa-solid fa-code"></i> Desarrollador o estudio</label>
           <input id="g_pub" maxlength="40" placeholder="Tu nombre o el de tu estudio">
         </div>
 
         <div class="sec">
-          <h3>Imágenes</h3>
+          <h3><i class="fa-solid fa-image"></i>Imágenes</h3>
           <p class="sub">Sube la imagen y la ajustamos automáticamente.</p>
           <div class="fld" id="pk_icon"></div>
           <div class="fld" id="pk_bg"></div>
         </div>
 
         <div class="sec">
-          <h3>Descripción</h3>
+          <h3><i class="fa-solid fa-pen-to-square"></i>Descripción</h3>
           <div class="fld" style="margin-top:12px">
             <label class="lab" for="g_desc">De qué trata tu juego <small id="cnt">0/800</small></label>
             <textarea id="g_desc" maxlength="800" placeholder="Cuenta de qué trata, cómo se juega y qué lo hace especial"></textarea>
@@ -237,7 +354,7 @@ details p{margin-top:10px}
         </div>
 
         <div class="sec">
-          <h3>Descarga</h3>
+          <h3><i class="fa-solid fa-box-archive"></i>Descarga</h3>
           <p class="sub">Sube tu APK o pega un enlace de descarga.</p>
           <div class="seg" role="tablist">
             <button type="button" id="m_file" class="on" role="tab">Subir mi APK</button>
@@ -288,7 +405,7 @@ details p{margin-top:10px}
       </aside>
     </div>
 
-    <h2 class="mt">Mis juegos</h2>
+    <h2 class="mt"><i class="fa-solid fa-dice"></i>Mis juegos</h2>
     <div class="list" id="list"></div>
   </main>
 </section>
@@ -296,7 +413,7 @@ details p{margin-top:10px}
 <!-- Guía para conseguir el APK -->
 <dialog id="guide">
   <button class="x" id="gx" aria-label="Cerrar">&times;</button>
-  <h2>Cómo conseguir el APK de tu juego</h2>
+  <h2><i class="fa-solid fa-mobile-screen"></i>Cómo conseguir el APK de tu juego</h2>
   <p>El APK es el archivo que instala tu juego en un celular Android. Elige tu caso:</p>
   <details>
     <summary>Mi juego es una web (HTML5, PWA o web app)</summary>
@@ -342,6 +459,7 @@ const firebaseConfig={
 const CFG={
   userDomain:'devs.giostore.app',              /* el usuario "juan" entra como juan@devs.giostore.app */
   requestUrl:'https://giostore.web.app/developer.html', /* página "Ser desarrollador" de la web oficial */
+  adminEmail:'giohanguelmo52@gmail.com',   /* el administrador entra directo, sin aprobación */
   contactEmail:'giohanguelmo52@gmail.com',     /* correo de ayuda para los desarrolladores */
   tiktok:'https://www.tiktok.com/@giostore.digital',
   whatsapp:'',                                 /* opcional: número con código de país, solo dígitos */
@@ -373,24 +491,43 @@ $('lf').onsubmit=async e=>{
   const u=$('u').value.trim(),p=$('p').value,m=$('lmsg');
   if(!u||!p){m.textContent='Escribe tu usuario y tu contraseña.';m.className='msg err';return}
   $('lbtn').disabled=true;m.textContent='';
-  try{await auth.signInWithEmailAndPassword(toEmail(u),p);$('p').value=''}
+  try{const cr=await auth.signInWithEmailAndPassword(toEmail(u),p);$('p').value='';show('boot');enter(cr.user)}
   catch(err){m.textContent=authError(err.code||'');m.className='msg err'}
   $('lbtn').disabled=false;
 };
-$('out').onclick=$('dout').onclick=()=>auth.signOut();
+let manual=false;
+$('out').onclick=$('dout').onclick=()=>{manual=true;auth.signOut()};
 $('cpy').onclick=async()=>{try{await navigator.clipboard.writeText($('uid').textContent);$('cpy').textContent='Copiado'}catch(e){}};
 
-auth.onAuthStateChanged(async u=>{
-  user=u;stopList();
-  if(!u){show('login');return}
-  show('boot');
-  let ok=false;
-  try{ok=(await db.ref('developers/'+u.uid).once('value')).val()===true}catch(e){console.warn('Permisos:',e.code||e)}
-  if(user!==u)return;
-  if(!ok){$('uid').textContent=u.uid;$('cpy').textContent='Copiar';show('denied');return}
+/* Sesión: persistencia con respaldo (por si el navegador bloquea el almacenamiento) */
+auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(()=>auth.setPersistence(firebase.auth.Auth.Persistence.SESSION).catch(()=>auth.setPersistence(firebase.auth.Auth.Persistence.NONE).catch(()=>{})));
+let seq=0,entered=null;
+async function enter(u){
+  if(entered===u.uid)return;entered=u.uid;
+  const my=++seq;user=u;stopList();show('boot');
+  let ok=false,fail=null;
+  if((u.email||'').toLowerCase()===CFG.adminEmail)ok=true;
+  else try{ok=(await db.ref('developers/'+u.uid).once('value')).val()===true}catch(e){fail=e;console.warn('Permisos:',e.code||e)}
+  if(my!==seq)return;
+  if(!ok){
+    $('uid').textContent=u.uid;$('cpy').textContent='Copiar';
+    $('derr').textContent=fail?'No pudimos comprobar tu permiso ('+(fail.code||'error')+'). Avisa a Gio Store.':'';
+    show('denied');return;
+  }
   $('who').textContent=(u.email||'').replace('@'+CFG.userDomain,'');
-  show('app');resetForm();startList();
+  show('app');
+  try{resetForm();startList()}catch(e){console.error(e)}
+}
+let nullT=0;
+function toLogin(){seq++;entered=null;user=null;stopList();show('login')}
+auth.onAuthStateChanged(u=>{
+  clearTimeout(nullT);
+  if(u){enter(u);return}
+  /* Un aviso de sesión vacío que no viene de «Cerrar sesión» se ignora si la cuenta sigue activa */
+  if(manual){manual=false;toLogin();return}
+  nullT=setTimeout(()=>{if(auth.currentUser)return;toLogin()},2500);
 });
+/* Al volver a la pestaña no se toca nada: así no se pierde lo que estabas escribiendo */
 
 /* ---------- Imágenes ---------- */
 function pickHTML(k,title,hint){
